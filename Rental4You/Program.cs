@@ -4,10 +4,25 @@ using Rental4You.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//var builder2 = new ConfigurationBuilder();
+//builder2.SetBasePath(Directory.GetCurrentDirectory())
+//                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+
+//string path = Directory.GetCurrentDirectory();
+
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//                  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+//                  .Replace("[DataDirectory]", path)));
+
+// old
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
