@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Rental4You.Data;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,15 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 
-//string path = Directory.GetCurrentDirectory();
+string path = Directory.GetCurrentDirectory();
 
-//builder.Services.AddDbContext<ApplicationDbContext>(options =>
-//                  options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
-//                  .Replace("[DataDirectory]", path)));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                  options.UseSqlServer(connectionString.Replace("[DataDirectory]", path)));
 
 // old
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//    options.UseSqlServer(connectionString));
 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
