@@ -238,7 +238,7 @@ namespace Rental4You.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("companies", (string)null);
+                    b.ToTable("companies");
                 });
 
             modelBuilder.Entity("Rental4You.Models.Vehicle", b =>
@@ -253,13 +253,13 @@ namespace Rental4You.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("companyId")
+                    b.Property<int?>("companyId")
                         .HasColumnType("int");
 
                     b.Property<int>("costPerDay")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("deliver")
+                    b.Property<DateTime?>("deliver")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("model")
@@ -274,14 +274,14 @@ namespace Rental4You.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("withdraw")
+                    b.Property<DateTime?>("withdraw")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
                     b.HasIndex("companyId");
 
-                    b.ToTable("vehicles", (string)null);
+                    b.ToTable("vehicles");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -339,9 +339,7 @@ namespace Rental4You.Migrations
                 {
                     b.HasOne("Rental4You.Models.Company", "company")
                         .WithMany("vehicles")
-                        .HasForeignKey("companyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("companyId");
 
                     b.Navigation("company");
                 });
