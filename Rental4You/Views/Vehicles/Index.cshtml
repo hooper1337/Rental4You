@@ -7,31 +7,31 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <small>(<a asp-action="Create">Add new car</a>)</small>
 </p>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.brand)
+                Brand
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.model)
+                Model
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.type)
+                Type
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.place)
+                Place
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.withdraw)
+                Withdraw Date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.deliver)
+                Deliver Date
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.costPerDay)
+                Cost/Day
             </th>
             <th></th>
         </tr>
@@ -52,10 +52,24 @@
                 @Html.DisplayFor(modelItem => item.place)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.withdraw)
+                @if(item.withdraw == null)
+                {
+                    <a>Not defined</a>
+                }
+                @if (item.withdraw != null)
+                {
+                    @Html.DisplayFor(modelItem => item.withdraw)
+                }
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.deliver)
+                @if (item.deliver == null)
+                {
+                    <a>Not defined</a>
+                }
+                @if (item.deliver != null)
+                {
+                    @Html.DisplayFor(modelItem => item.deliver)
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.costPerDay)
