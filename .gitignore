@@ -1,3 +1,5 @@
+
+
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,csharp,dotnetcore,aspnetcore,windows,linux,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,visualstudiocode,csharp,dotnetcore,aspnetcore,windows,linux,git
 
@@ -777,3 +779,7 @@ $RECYCLE.BIN/
 # Additional files built by Visual Studio
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,csharp,dotnetcore,aspnetcore,windows,linux,git
+
+# Don't ignore this:
+!Rental4YouDb05_log.ldf
+!Rental4YouDb05.mdf
