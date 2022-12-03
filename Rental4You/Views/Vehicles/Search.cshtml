@@ -1,0 +1,109 @@
+﻿@model Rental4You.ViewModels.SearchVehicleViewModel
+
+<h1>Our Vehicles</h1>
+@*<form method="post">
+    <label asp-for="TextoAPesquisar"></label>
+    <input asp-for="TextoAPesquisar" />
+
+    <input type="submit" value="Pesquisar" />
+</form>*@
+
+@if (!string.IsNullOrEmpty(Model.TextToSearch))
+{
+    <p>Resultado da pesquisa por "@Model.TextToSearch":</p>
+
+    @if (Model.NumResults == 0)
+    {
+        <p class="alert alert-warning">
+            Não foi possível
+            encontrar cursos com os dados introduzidos.
+            Por favor, reveja a sua pesquisa
+        </p>
+    }
+}
+else
+{
+    <p>Existe(m) @Model.NumResults curso(s) disponíveis</p>
+}
+
+
+
+<h1>Index</h1>
+
+<p>
+    <small>(<a asp-action="Create">Add new car</a>)</small>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Brand
+            </th>
+            <th>
+                Model
+            </th>
+            <th>
+                Type
+            </th>
+            <th>
+                Place
+            </th>
+            <th>
+                Withdraw Date
+            </th>
+            <th>
+                Deliver Date
+            </th>
+            <th>
+                Cost/Day
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.VehicleList) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.brand)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.model)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.type)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.place)
+            </td>
+            <td>
+                @if(item.withdraw == null)
+                {
+                    <a>Not defined</a>
+                }
+                @if (item.withdraw != null)
+                {
+                    @Html.DisplayFor(modelItem => item.withdraw)
+                }
+            </td>
+            <td>
+                @if (item.deliver == null)
+                {
+                    <a>Not defined</a>
+                }
+                @if (item.deliver != null)
+                {
+                    @Html.DisplayFor(modelItem => item.deliver)
+                }
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.costPerDay)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
