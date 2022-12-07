@@ -252,15 +252,15 @@ namespace Rental4You.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int?>("CompanyId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("available")
                         .HasColumnType("bit");
 
                     b.Property<string>("brand")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("companyId")
-                        .HasColumnType("int");
 
                     b.Property<int>("costPerDay")
                         .HasColumnType("int");
@@ -285,7 +285,7 @@ namespace Rental4You.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("companyId");
+                    b.HasIndex("CompanyId");
 
                     b.ToTable("vehicles");
                 });
@@ -345,7 +345,7 @@ namespace Rental4You.Migrations
                 {
                     b.HasOne("Rental4You.Models.Company", "company")
                         .WithMany("vehicles")
-                        .HasForeignKey("companyId");
+                        .HasForeignKey("CompanyId");
 
                     b.Navigation("company");
                 });

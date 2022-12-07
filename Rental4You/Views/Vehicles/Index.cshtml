@@ -22,6 +22,9 @@
                 Type
             </th>
             <th>
+                Company
+            </th>
+            <th>
                 Place
             </th>
             <th>
@@ -47,6 +50,16 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.type)
+            </td>
+            <td>
+                    @if (item.company == null)
+                    {
+                        <a>Not defined</a>
+                    }
+                    @if (item.company != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.company.name)
+                    }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.place)
