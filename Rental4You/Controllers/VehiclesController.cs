@@ -23,7 +23,7 @@ namespace Rental4You.Controllers
         // GET: Vehicles
         public async Task<IActionResult> Index()
         {
-              return View(await _context.vehicles.ToListAsync());
+            return View(await _context.vehicles.ToListAsync());
         }
 
 
@@ -37,8 +37,7 @@ namespace Rental4You.Controllers
             else
             {
                 pesquisaVM.VehicleList = await _context.vehicles. // Include("categoria").
-                    Where(c => c.brand.Contains(TextToSearch) ||
-                                c.model.Contains(TextToSearch) ||
+                    Where(c => 
                                 c.type.Contains(TextToSearch) ||
                                 c.place.Contains(TextToSearch) ||
                                 c.costPerDay.ToString().Contains(TextToSearch)
@@ -188,6 +187,7 @@ namespace Rental4You.Controllers
 
             var vehicle = await _context.vehicles
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (vehicle == null)
             {
                 return NotFound();
