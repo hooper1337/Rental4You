@@ -28,34 +28,45 @@ namespace Rental4You.Controllers
 
 
         // ---------- Search ----------
-        public async Task<IActionResult> Search(string? TextToSearch)
+        public async Task<IActionResult> Search(
+            string? TextToSearch, 
+            [Bind("TextToSearch,Order")] SearchVehicleViewModel pesquisaCurso)
         {
-            SearchVehicleViewModel pesquisaVM = new SearchVehicleViewModel();
+            // SearchVehicleViewModel pesquisaVM = new SearchVehicleViewModel();
 
-            if (string.IsNullOrWhiteSpace(TextToSearch))
-                // objListOrder.OrderBy(o=>o.OrderDate).ToList();
-                pesquisaVM.VehicleList = await _context.vehicles.ToListAsync(); // .Include("categoria")
+            if (string.IsNullOrWhiteSpace(TextToSearch)) {
+                pesquisaCurso.VehicleList = await _context.vehicles.ToListAsync(); // .Include("categoria")
+            }
             else
             {
-                pesquisaVM.VehicleList = await _context.vehicles. // Include("categoria").
+                pesquisaCurso.VehicleList = await _context.vehicles. // Include("categoria").
                     Where(c => 
                                 c.type.Contains(TextToSearch) ||
                                 c.place.Contains(TextToSearch) ||
                                 c.costPerDay.ToString().Contains(TextToSearch)
                          ).ToListAsync();
 
-                pesquisaVM.TextToSearch = TextToSearch;
+                pesquisaCurso.TextToSearch = TextToSearch;
             }
 
-            pesquisaVM.NumResults = pesquisaVM.VehicleList.Count();
+            pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
 
-            return View(pesquisaVM);
+            /*  <option value="1">Lowest Price</option>
+                <option value="2">Highest Price</option>
+                <option value="3">Lowest Company Classification</option>
+                <option value="4">Highest Company Classification</option> */
+            if (pesquisaCurso.Order == 1)
+                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.costPerDay).ToList();
+            if (pesquisaCurso.Order == 2)
+                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.costPerDay).ToList();
+
+            return View(pesquisaCurso);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Search(
-            [Bind("TextToSearch")]
+            [Bind("TextToSearch,Order")]
             SearchVehicleViewModel pesquisaCurso
             )
         {
@@ -82,6 +93,16 @@ namespace Rental4You.Controllers
                 pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
 
             }
+
+
+            /*  <option value="1">Lowest Price</option>
+                <option value="2">Highest Price</option>
+                <option value="3">Lowest Company Classification</option>
+                <option value="4">Highest Company Classification</option> */
+            if (pesquisaCurso.Order == 1)
+                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.costPerDay).ToList();
+            if (pesquisaCurso.Order == 2)
+                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.costPerDay).ToList();
 
             return View(pesquisaCurso);
         }
@@ -164,6 +185,11 @@ namespace Rental4You.Controllers
             {
                 try
                 {
+<<<<<<< HEAD
+=======
+                    var company = _context.companies.FindAsync(vehicle.CompanyId);
+
+>>>>>>> Development
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
