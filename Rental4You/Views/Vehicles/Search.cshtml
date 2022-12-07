@@ -29,6 +29,8 @@ else
 
 
 <!-- Search Start -->
+@using (Html.BeginForm("Search", "Vehicles", FormMethod.Get))
+{
 <div class="container-fluid bg-white pt-3 px-lg-5">
     <div class="row mx-n2">
         <div class="col-xl-2 col-lg-4 col-md-6 px-2">
@@ -40,21 +42,23 @@ else
         </div>
 
         <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-            <select class="custom-select px-4 mb-3" style="height: 50px;">
+            <select asp-for="Order" class="custom-select px-4 mb-3" style="height: 50px;">
+                    <!-- asp-for="Order" -->
                 <option selected>Order By</option>
                 <option value="1">Lowest Price</option>
                 <option value="2">Highest Price</option>
                 <option value="3">Lowest Company Classification</option>
-                <option value="3">Highest Company Classification</option>
+                <option value="4">Highest Company Classification</option>
             </select>
         </div>
         <div class="col-xl-2 col-lg-4 col-md-6 px-2">
             <button class="btn btn-primary btn-block mb-3" type="submit" style="height: 50px;">Search</button>
         </div>
+            <!-- .OrderBy(v => v.costPerDay) -->
     </div>
 </div>
+}
 <!-- Search End -->
-
 
 <table class="table">
     <thead>

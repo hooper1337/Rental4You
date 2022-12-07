@@ -11,5 +11,7 @@ namespace Rental4You.ViewModels
         [Display(Name = "SEARCH FOR VEHICLES ...", Prompt = "Incert text to search...")]
         public string TextToSearch { get; set; }
 
+        public int Order { get; set; }
+
     }
 }
