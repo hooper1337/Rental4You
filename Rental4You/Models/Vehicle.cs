@@ -20,8 +20,9 @@ namespace Rental4You.Models
         public DateTime ?deliver { set; get; }
         [Display(Name = "Cost/Day", Prompt = "Insert vehicle cost per day...")]
         public int costPerDay { set; get; }
-        [Display(Name = "Company", Prompt = "Choose vehicle company...")]
+        
         public int? CompanyId { get; set; }
+        [Display(Name = "Company", Prompt = "Choose vehicle company...")]
         public Company? company { set; get; }
 
         [Display(Name = "Available", Prompt = "Is this vehicle available...")]

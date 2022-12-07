@@ -28,6 +28,14 @@
                 <span asp-validation-for="type" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="CompanyId" class="control-label"></label>
+                <select asp-for="CompanyId"
+                        asp-items="ViewBag.CompaniesList"
+                        class="form-control">
+                </select>
+                <span asp-validation-for="CompanyId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="place" class="control-label"></label>
                 <input asp-for="place" class="form-control" />
                 <span asp-validation-for="place" class="text-danger"></span>
