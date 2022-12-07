@@ -33,6 +33,7 @@ namespace Rental4You.Controllers
             SearchVehicleViewModel pesquisaVM = new SearchVehicleViewModel();
 
             if (string.IsNullOrWhiteSpace(TextToSearch))
+                // objListOrder.OrderBy(o=>o.OrderDate).ToList();
                 pesquisaVM.VehicleList = await _context.vehicles.ToListAsync(); // .Include("categoria")
             else
             {
@@ -139,6 +140,7 @@ namespace Rental4You.Controllers
             {
                 return NotFound();
             }
+            ViewData["CompaniesList"] = new SelectList(_context.companies.ToList(), "Id", "name", vehicle.CompanyId);
             return View(vehicle);
         }
 
@@ -147,17 +149,23 @@ namespace Rental4You.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,brand,model,type,place,withdraw,deliver,costPerDay")] Vehicle vehicle)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle)
         {
             if (id != vehicle.Id)
             {
                 return NotFound();
             }
 
+            ModelState.Remove(nameof(vehicle.company));
+           
+
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var company = _context.companies.FindAsync(vehicle.CompanyId);
+                    vehicle.company = company;
+
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
@@ -174,6 +182,7 @@ namespace Rental4You.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ;
             return View(vehicle);
         }
 
