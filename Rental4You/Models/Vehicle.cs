@@ -22,6 +22,9 @@ namespace Rental4You.Models
         public int costPerDay { set; get; }
         [Display(Name = "Company", Prompt = "Choose vehicle company...")]
         public Company ?company { set; get; }
+
+        [Display(Name = "Available", Prompt = "Is this vehicle available...")]
+        public Boolean available { set; get; }
     }
 
 }
