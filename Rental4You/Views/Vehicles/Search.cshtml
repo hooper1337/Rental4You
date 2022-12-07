@@ -10,14 +10,12 @@
 
 @if (!string.IsNullOrEmpty(Model.TextToSearch))
 {
-    <p>Resultado da pesquisa por "@Model.TextToSearch":</p>
+    <p>Search result for: "@Model.TextToSearch":</p>
 
     @if (Model.NumResults == 0)
     {
         <p class="alert alert-warning">
-            Não foi possível
-            encontrar cursos com os dados introduzidos.
-            Por favor, reveja a sua pesquisa
+            It was possible to find vehicles with the inserted data.
         </p>
     }
 }
