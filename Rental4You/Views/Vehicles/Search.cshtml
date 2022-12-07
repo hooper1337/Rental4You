@@ -73,6 +73,9 @@ else
                 Type
             </th>
             <th>
+                Company
+            </th>
+            <th>
                 Place
             </th>
             <th>
@@ -88,50 +91,60 @@ else
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.VehicleList) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.brand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.model)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.place)
-            </td>
-            <td>
-                @if(item.withdraw == null)
-                {
-                    <a>Not defined</a>
-                }
-                @if (item.withdraw != null)
-                {
-                    @Html.DisplayFor(modelItem => item.withdraw)
-                }
-            </td>
-            <td>
-                @if (item.deliver == null)
-                {
-                    <a>Not defined</a>
-                }
-                @if (item.deliver != null)
-                {
-                    @Html.DisplayFor(modelItem => item.deliver)
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.costPerDay)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.VehicleList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.brand)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.model)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.type)
+                </td>
+                <td>
+                    @if (item.company == null)
+                    {
+                        <a>Not defined</a>
+                    }
+                    @if (item.company != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.company.name)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.place)
+                </td>
+                <td>
+                    @if (item.withdraw == null)
+                    {
+                        <a>Not defined</a>
+                    }
+                    @if (item.withdraw != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.withdraw)
+                    }
+                </td>
+                <td>
+                    @if (item.deliver == null)
+                    {
+                        <a>Not defined</a>
+                    }
+                    @if (item.deliver != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.deliver)
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.costPerDay)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
-
