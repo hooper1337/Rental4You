@@ -185,11 +185,6 @@ namespace Rental4You.Controllers
             {
                 try
                 {
-<<<<<<< HEAD
-=======
-                    var company = _context.companies.FindAsync(vehicle.CompanyId);
-
->>>>>>> Development
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
