@@ -1,12 +1,7 @@
 ﻿@model Rental4You.ViewModels.SearchVehicleViewModel
 
 <h1>Our Vehicles (Index)</h1>
-@*<form method="post">
-    <label asp-for="TextoAPesquisar"></label>
-    <input asp-for="TextoAPesquisar" />
 
-    <input type="submit" value="Pesquisar" />
-</form>*@
 
 @if (!string.IsNullOrEmpty(Model.TextToSearch))
 {
@@ -29,7 +24,7 @@ else
 
 
 <!-- Search Start -->
-@using (Html.BeginForm("Search", "Vehicles", FormMethod.Get))
+@using (Html.BeginForm("Index", "Vehicles", FormMethod.Get))
 {
     <div class="container-fluid bg-white pt-3 px-lg-5">
         <div class="row mx-n2">

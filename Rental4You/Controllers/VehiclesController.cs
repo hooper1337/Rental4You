@@ -21,25 +21,27 @@ namespace Rental4You.Controllers
         }
 
         // GET: Vehicles
+        /*
         public async Task<IActionResult> Index()
         {
             return View(await _context.vehicles.Include("company").ToListAsync());
         }
+        */
 
 
         // ---------- Search ----------
-        public async Task<IActionResult> Search(
+        public async Task<IActionResult> Index(
             string? TextToSearch, 
             [Bind("TextToSearch,Order")] SearchVehicleViewModel pesquisaCurso)
         {
             // SearchVehicleViewModel pesquisaVM = new SearchVehicleViewModel();
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
-                pesquisaCurso.VehicleList = await _context.vehicles.ToListAsync(); // .Include("categoria")
+                pesquisaCurso.VehicleList = await _context.vehicles.Include("company").ToListAsync(); // .Include("categoria")
             }
             else
             {
-                pesquisaCurso.VehicleList = await _context.vehicles. // Include("categoria").
+                pesquisaCurso.VehicleList = await _context.vehicles.Include("company"). // Include("categoria").
                     Where(c => 
                                 c.type.Contains(TextToSearch) ||
                                 c.place.Contains(TextToSearch) ||
@@ -65,7 +67,7 @@ namespace Rental4You.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Search(
+        public async Task<IActionResult> Index(
             [Bind("TextToSearch,Order")]
             SearchVehicleViewModel pesquisaCurso
             )
@@ -74,14 +76,14 @@ namespace Rental4You.Controllers
             if (string.IsNullOrEmpty(pesquisaCurso.TextToSearch))
             {
                 pesquisaCurso.VehicleList =
-                    await _context.vehicles.ToListAsync(); // .Include("categoria")
+                    await _context.vehicles.Include("company").ToListAsync(); // .Include("categoria")
 
                 pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
             }
             else
             {
                 pesquisaCurso.VehicleList =
-                    await _context.vehicles.Where( // Include(c => c.categoria).
+                    await _context.vehicles.Include("company").Where( // Include(c => c.categoria).
                         c => c.brand.Contains(pesquisaCurso.TextToSearch) ||
                                 c.model.Contains(pesquisaCurso.TextToSearch) ||
                                 c.type.Contains(pesquisaCurso.TextToSearch) ||
