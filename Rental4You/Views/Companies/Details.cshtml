@@ -1,0 +1,57 @@
+﻿@model Rental4You.Models.Company
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Company</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.classification)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.classification)
+        </dd>
+        <dt class="col-sm-2">
+            Car list
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.vehicles == null)
+            {
+                <a>No vehicles to display</a>
+            }
+            @if (Model.vehicles != null)
+            {
+                var counter = 0;
+                @foreach (var vehicle in Model.vehicles)
+                {
+                    var vehicleDisplay = vehicle.brand + " " + vehicle.model;
+                    counter++;
+                    if (counter == Model.vehicles.Count)
+                    {
+                        vehicleDisplay += " ";
+                    }
+                    else
+                    {
+                        vehicleDisplay += ", ";
+                    }
+                    @Html.DisplayFor(modelItem => vehicleDisplay)
+                }
+            }
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

@@ -61,6 +61,10 @@ namespace Rental4You.Controllers
                 pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.costPerDay).ToList();
             if (pesquisaCurso.Order == 2)
                 pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.costPerDay).ToList();
+            if (pesquisaCurso.Order == 3)
+                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.company.classification).ToList();
+            if (pesquisaCurso.Order == 4)
+                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.company.classification).ToList();
 
             return View(pesquisaCurso);
         }

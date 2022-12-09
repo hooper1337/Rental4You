@@ -1,6 +1,6 @@
 ﻿@model Rental4You.ViewModels.SearchVehicleViewModel
 
-<h1>Our Vehicles (Index)</h1>
+<h1>Our Vehicles</h1>
 
 
 @if (!string.IsNullOrEmpty(Model.TextToSearch))
@@ -16,7 +16,7 @@
 }
 else
 {
-    <p>Existe(m) @Model.NumResults curso(s) disponíveis</p>
+    <p>There are @Model.NumResults vehicles available</p>
 }
 
 
@@ -29,10 +29,8 @@ else
     <div class="container-fluid bg-white pt-3 px-lg-5">
         <div class="row mx-n2">
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-                <h1>Index</h1>
-
                 <p>
-                    <small>(<a asp-action="Create">Add new car</a>)</small>
+                    <small>(<a asp-action="Create">Add new vehicle</a>)</small>
                 </p>
             </div>
 
@@ -71,13 +69,10 @@ else
                 Company
             </th>
             <th>
+                Company Classification
+            </th>
+            <th>
                 Place
-            </th>
-            <th>
-                Withdraw Date
-            </th>
-            <th>
-                Deliver Date
             </th>
             <th>
                 Cost/Day
@@ -99,37 +94,14 @@ else
                     @Html.DisplayFor(modelItem => item.type)
                 </td>
                 <td>
-                    @if (item.company == null)
-                    {
-                        <a>Not defined</a>
-                    }
-                    @if (item.company != null)
-                    {
-                        @Html.DisplayFor(modelItem => item.company.name)
-                    }
+                    
+                    @Html.DisplayFor(modelItem => item.company.name)
+                </td>
+                <td> 
+                    @Html.DisplayFor(modelItem => item.company.classification)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.place)
-                </td>
-                <td>
-                    @if (item.withdraw == null)
-                    {
-                        <a>Not defined</a>
-                    }
-                    @if (item.withdraw != null)
-                    {
-                        @Html.DisplayFor(modelItem => item.withdraw)
-                    }
-                </td>
-                <td>
-                    @if (item.deliver == null)
-                    {
-                        <a>Not defined</a>
-                    }
-                    @if (item.deliver != null)
-                    {
-                        @Html.DisplayFor(modelItem => item.deliver)
-                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.costPerDay)

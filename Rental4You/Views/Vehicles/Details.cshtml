@@ -29,28 +29,22 @@
             @Html.DisplayFor(model => model.type)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.company)
+            @Html.DisplayNameFor(model => model.company.name)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.company.name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.company.classification)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.company.classification)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.place)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.place)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.withdraw)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.withdraw)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.deliver)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.deliver)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.costPerDay)

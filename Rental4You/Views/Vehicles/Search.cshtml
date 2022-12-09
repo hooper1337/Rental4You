@@ -79,12 +79,6 @@ else
                 Place
             </th>
             <th>
-                Withdraw Date
-            </th>
-            <th>
-                Deliver Date
-            </th>
-            <th>
                 Cost/Day
             </th>
             <th></th>
@@ -115,26 +109,6 @@ else
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.place)
-                </td>
-                <td>
-                    @if (item.withdraw == null)
-                    {
-                        <a>Not defined</a>
-                    }
-                    @if (item.withdraw != null)
-                    {
-                        @Html.DisplayFor(modelItem => item.withdraw)
-                    }
-                </td>
-                <td>
-                    @if (item.deliver == null)
-                    {
-                        <a>Not defined</a>
-                    }
-                    @if (item.deliver != null)
-                    {
-                        @Html.DisplayFor(modelItem => item.deliver)
-                    }
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.costPerDay)

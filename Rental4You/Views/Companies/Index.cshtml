@@ -1,0 +1,69 @@
+﻿@model IEnumerable<Rental4You.Models.Company>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <p>
+       <small>(<a asp-action="Create">Add new company</a>)</small>
+    </p>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Company Name
+            </th>
+            <th>
+                Classification
+            </th>
+            <th>
+                Cars
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.classification)
+            </td>
+                <td>
+                    @if(item.vehicles.Count == 0)
+                    {
+                        <a>No vehicles to display</a>
+                    }
+                    @if(item.vehicles.Count != 0)
+                    {
+                        var counter = 0;
+                        @foreach(var vehicle in item.vehicles)
+                        {
+                            var vehicleDisplay = vehicle.brand + " " + vehicle.model;
+                            counter++;
+                            if(counter == item.vehicles.Count)
+                            {
+                                vehicleDisplay += " ";
+                            }
+                            else
+                            {
+                                vehicleDisplay += ", ";
+                            }
+                            @Html.DisplayFor(modelItem => vehicleDisplay)
+                        }
+                    }
+                </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

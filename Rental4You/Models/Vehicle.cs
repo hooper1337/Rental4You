@@ -15,12 +15,7 @@ namespace Rental4You.Models
         [Display(Name = "Place", Prompt = "Insert vehicle place...")]
         public string place { set; get; }
         [Display(Name = "Withdraw Date", Prompt = "Choose vechicle withdraw date...")]
-        public DateTime ?withdraw { set; get; }
-        [Display(Name = "Delivery Date", Prompt = "Choose vechicle delivery date...")]
-        public DateTime ?deliver { set; get; }
-        [Display(Name = "Cost/Day", Prompt = "Insert vehicle cost per day...")]
         public int costPerDay { set; get; }
-        
         public int? CompanyId { get; set; }
         [Display(Name = "Company", Prompt = "Choose vehicle company...")]
         public Company? company { set; get; }
