@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -32,9 +33,10 @@ namespace Rental4You.Controllers
         // ---------- Search ----------
         public async Task<IActionResult> Index(
             string? TextToSearch, 
-            [Bind("TextToSearch,Order")] SearchVehicleViewModel pesquisaCurso)
+            [Bind("TextToSearch,Order")] SearchVehicleViewModel pesquisaCurso,
+            [Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle
+            )
         {
-            // SearchVehicleViewModel pesquisaVM = new SearchVehicleViewModel();
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
                 pesquisaCurso.VehicleList = await _context.vehicles.Include("company").ToListAsync(); // .Include("categoria")
@@ -49,6 +51,19 @@ namespace Rental4You.Controllers
                          ).ToListAsync();
 
                 pesquisaCurso.TextToSearch = TextToSearch;
+            }
+
+            if (vehicle.place != null) {
+                // vehicle.place only has the ID of the vehicle that has the place we want to show
+                var placeToSearch = _context.vehicles.Find(Convert.ToInt32(vehicle.place)).place;
+                pesquisaCurso.VehicleList = await _context.vehicles.Include("company"). // Include("categoria").
+                    Where(c => c.place.Equals(placeToSearch)).ToListAsync();
+            }
+            if (vehicle.type != null)
+            {
+                var typeToSearch = _context.vehicles.Find(Convert.ToInt32(vehicle.type)).type;
+                pesquisaCurso.VehicleList = await _context.vehicles.Include("company"). // Include("categoria").
+                    Where(c => c.type.Equals(typeToSearch)).ToListAsync();
             }
 
             pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();

@@ -14,26 +14,31 @@
     <div class="container-fluid bg-white pt-3 px-lg-5">
         <div class="row mx-n2">
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-                <!-- asp-for= Id Or CompanyId? Perguntar ao Hugo -->
-                <select asp-for="Id" 
+                <select asp-for="place" 
                         asp-items="ViewBag.LocationList"
                         class="form-control">
                     <option value="" disabled selected>Location</option>
                 </select>
             </div>
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-                <select asp-for="Id"
-                        asp-items="ViewBag.LocationList"
+                <select asp-for="type"
+                        asp-items="ViewBag.TypeList"
                         class="form-control">
                     <option value="" disabled selected>Type</option>
                 </select>
             </div>
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-                <select asp-for="Id"
-                        asp-items="ViewBag.PickupDateList"
+                <!-- Will have to change to date -->
+                <select asp-for="costPerDay"
+                        asp-items="ViewBag.withdrawDateList"
                         class="form-control">
                     <option value="" disabled selected>Pickup Date</option>
                 </select>
+            </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 px-2">
+                <input type="text" name="TextToSearch"
+                    id="TextToSearch" placeholder="texto a procurar"
+                    class="form-control form-control-sm" />
             </div>
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
                 <button class="btn btn-primary btn-block mb-3" type="submit" style="height: 50px;">Search</button>
@@ -43,17 +48,6 @@
     }
     <!-- Search End -->
 
-    <!-- testing the search -->
-    @using (Html.BeginForm("Index", "Vehicles", FormMethod.Get))
-    {
-        <div class="form-inline d-flex ">
-            <input type="text" name="TextToSearch"
-               id="TextToSearch" placeholder="texto a procurar"
-               class="form-control form-control-sm" />
-        </div>
-    }
-    <br />
-    <br />
 
     <!-- Carousel Start -->
     <div class="container-fluid p-0" style="margin-bottom: 90px;">

@@ -23,8 +23,8 @@ namespace Rental4You.Controllers
         public IActionResult Index()
         {
             ViewData["LocationList"] = new SelectList(_context.vehicles.ToList(), "Id", "place");
-            ViewData["TypeList"] = new SelectList(_context.vehicles.ToList(), "Id", "type");
-            ViewData["PickupDateList"] = new SelectList(_context.vehicles.ToList(), "Id", "costPerDay"); // need to change to withdrawDate
+            ViewData["TypeList"] = new SelectList(_context.vehicles.ToList(), "Id", "type"); //can't get repetitions in list to go away .Distinct()
+            // ViewData["withdrawDateList"] = new SelectList(_context.vehicles.ToList(), "Id", "withdrawDate"); // need to change to withdrawDate
 
             return View();
         }
