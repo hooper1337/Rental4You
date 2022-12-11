@@ -15,10 +15,10 @@ namespace Rental4You.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public VehiclesController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+            public VehiclesController(ApplicationDbContext context)
+            {
+                _context = context;
+            }
 
         // GET: Vehicles
         /*
