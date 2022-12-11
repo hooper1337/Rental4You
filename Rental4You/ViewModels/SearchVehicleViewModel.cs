@@ -13,8 +13,5 @@ namespace Rental4You.ViewModels
 
         public int Order { get; set; }
 
-        public string place { set; get; }
-        public string type { set; get; }
-
     }
 }
