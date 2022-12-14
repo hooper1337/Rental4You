@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Rental4You.Data;
 using Rental4You.Models;
 using System.Diagnostics;
@@ -18,6 +19,7 @@ namespace Rental4You.Controllers
             _context = context;
         }
 
+
         public IActionResult Index()
         {
             var uniqueVehiclesPlace = from p in _context.vehicles
@@ -27,16 +29,17 @@ namespace Rental4You.Controllers
             ViewData["LocationList"] = new SelectList(uniqueVehiclesPlace.ToList(), "Id", "place");
 
             var uniqueVehiclesTypes = from p in _context.vehicles
-                               group p by new { p.type }
+                                      group p by new { p.type }
                                into mygroup
-                               select mygroup.FirstOrDefault();
+                                      select mygroup.FirstOrDefault();
             ViewData["TypeList"] = new SelectList(uniqueVehiclesTypes.ToList(), "Id", "type");
             // ViewData["withdrawDateList"] = new SelectList(_context.vehicles.ToList(), "Id", "withdrawDate"); // need to change to withdrawDate
 
             return View();
         }
 
-  
+
+
 
         public IActionResult Privacy()
         {

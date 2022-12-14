@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -15,22 +16,26 @@ namespace Rental4You.Controllers
     {
         private readonly ApplicationDbContext _context;
 
-        public VehiclesController(ApplicationDbContext context)
-        {
-            _context = context;
-        }
+            public VehiclesController(ApplicationDbContext context)
+            {
+                _context = context;
+            }
 
         // GET: Vehicles
+        /*
         public async Task<IActionResult> Index()
         {
-            return View(await _context.vehicles.ToListAsync());
+            return View(await _context.vehicles.Include("company").ToListAsync());
         }
+        */
 
 
         // ---------- Search ----------
-        public async Task<IActionResult> Search(
+        public async Task<IActionResult> Index(
             string? TextToSearch, 
-            [Bind("TextToSearch,Order")] SearchVehicleViewModel pesquisaCurso)
+            [Bind("TextToSearch,Order")] SearchVehicleViewModel pesquisaCurso,
+            [Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle
+            )
         {
             // IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
 
@@ -40,7 +45,7 @@ namespace Rental4You.Controllers
             }
             else
             {
-                pesquisaCurso.VehicleList = await _context.vehicles. // Include("categoria").
+                pesquisaCurso.VehicleList = await _context.vehicles.Include("company"). // Include("categoria").
                     Where(c => 
                                 c.type.Contains(TextToSearch) ||
                                 c.place.Contains(TextToSearch) ||
@@ -48,6 +53,19 @@ namespace Rental4You.Controllers
                          ).ToListAsync();
 
                 pesquisaCurso.TextToSearch = TextToSearch;
+            }
+
+            if (vehicle.place != null) {
+                // vehicle.place only has the ID of the vehicle that has the place we want to show
+                var placeToSearch = _context.vehicles.Find(Convert.ToInt32(vehicle.place)).place;
+                pesquisaCurso.VehicleList = await _context.vehicles.Include("company"). // Include("categoria").
+                    Where(c => c.place.Equals(placeToSearch)).ToListAsync();
+            }
+            if (vehicle.type != null)
+            {
+                var typeToSearch = _context.vehicles.Find(Convert.ToInt32(vehicle.type)).type;
+                pesquisaCurso.VehicleList = await _context.vehicles.Include("company"). // Include("categoria").
+                    Where(c => c.type.Equals(typeToSearch)).ToListAsync();
             }
 
             pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
@@ -60,15 +78,19 @@ namespace Rental4You.Controllers
                 pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.costPerDay).ToList();
             if (pesquisaCurso.Order == 2)
                 pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.costPerDay).ToList();
+            if (pesquisaCurso.Order == 3)
+                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.company.classification).ToList();
+            if (pesquisaCurso.Order == 4)
+                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.company.classification).ToList();
 
 
-            //pesquisaCurso.VehicleList = await searchResults.ToListAsync();
+            // pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             return View(pesquisaCurso);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Search(
+        public async Task<IActionResult> Index(
             [Bind("TextToSearch,Order")]
             SearchVehicleViewModel pesquisaCurso
             )
@@ -77,14 +99,14 @@ namespace Rental4You.Controllers
             if (string.IsNullOrEmpty(pesquisaCurso.TextToSearch))
             {
                 pesquisaCurso.VehicleList =
-                    await _context.vehicles.ToListAsync(); // .Include("categoria")
+                    await _context.vehicles.Include("company").ToListAsync(); // .Include("categoria")
 
                 pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
             }
             else
             {
                 pesquisaCurso.VehicleList =
-                    await _context.vehicles.Where( // Include(c => c.categoria).
+                    await _context.vehicles.Include("company").Where( // Include(c => c.categoria).
                         c => c.brand.Contains(pesquisaCurso.TextToSearch) ||
                                 c.model.Contains(pesquisaCurso.TextToSearch) ||
                                 c.type.Contains(pesquisaCurso.TextToSearch) ||
@@ -119,7 +141,7 @@ namespace Rental4You.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.vehicles
+            var vehicle = await _context.vehicles.Include("company")
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
@@ -132,6 +154,7 @@ namespace Rental4You.Controllers
         // GET: Vehicles/Create
         public IActionResult Create()
         {
+            ViewData["CompaniesList"] = new SelectList(_context.companies.ToList(), "Id", "name");
             return View();
         }
 
@@ -140,8 +163,9 @@ namespace Rental4You.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,brand,model,type,place,withdraw,deliver,costPerDay")] Vehicle vehicle)
+        public async Task<IActionResult> Create([Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle)
         {
+            ViewData["CompaniesList"] = new SelectList(_context.companies.ToList(), "Id", "name");
             if (ModelState.IsValid)
             {
                 _context.Add(vehicle);
@@ -181,14 +205,11 @@ namespace Rental4You.Controllers
             }
 
             ModelState.Remove(nameof(vehicle.company));
-           
-
+            
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var company = _context.companies.FindAsync(vehicle.CompanyId);
-
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
@@ -205,7 +226,6 @@ namespace Rental4You.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ;
             return View(vehicle);
         }
 

@@ -1,14 +1,58 @@
-﻿@model IEnumerable<Rental4You.Models.Vehicle>
+﻿@model Rental4You.ViewModels.SearchVehicleViewModel
 
-@{
-    ViewData["Title"] = "Index";
+<h1>Our Vehicles</h1>
+
+
+@if (!string.IsNullOrEmpty(Model.TextToSearch))
+{
+    <p>Search result for: "@Model.TextToSearch":</p>
+
+    @if (Model.NumResults == 0)
+    {
+        <p class="alert alert-warning">
+            It was possible to find vehicles with the inserted data.
+        </p>
+    }
+}
+else
+{
+    <p>There are @Model.NumResults vehicles available</p>
 }
 
-<h1>Index</h1>
 
-<p>
-    <small>(<a asp-action="Create">Add new car</a>)</small>
-</p>
+
+
+
+<!-- Search Start -->
+@using (Html.BeginForm("Index", "Vehicles", FormMethod.Get))
+{
+    <div class="container-fluid bg-white pt-3 px-lg-5">
+        <div class="row mx-n2">
+            <div class="col-xl-2 col-lg-4 col-md-6 px-2">
+                <p>
+                    <small>(<a asp-action="Create">Add new vehicle</a>)</small>
+                </p>
+            </div>
+
+            <div class="col-xl-2 col-lg-4 col-md-6 px-2">
+                <select asp-for="Order" class="custom-select px-4 mb-3" style="height: 50px;">
+                    <!-- asp-for="Order" -->
+                    <option selected>Order By</option>
+                    <option value="1">Lowest Price</option>
+                    <option value="2">Highest Price</option>
+                    <option value="3">Lowest Company Classification</option>
+                    <option value="4">Highest Company Classification</option>
+                </select>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6 px-2">
+                <button class="btn btn-primary btn-block mb-3" type="submit" style="height: 50px;">Search</button>
+            </div>
+            <!-- .OrderBy(v => v.costPerDay) -->
+        </div>
+    </div>
+}
+<!-- Search End -->
+
 <table class="table">
     <thead>
         <tr>
@@ -25,13 +69,10 @@
                 Company
             </th>
             <th>
+                Company Classification
+            </th>
+            <th>
                 Place
-            </th>
-            <th>
-                Withdraw Date
-            </th>
-            <th>
-                Deliver Date
             </th>
             <th>
                 Cost/Day
@@ -40,59 +81,37 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.brand)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.model)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.type)
-            </td>
-            <td>
-                    @if (item.company == null)
-                    {
-                        <a>Not defined</a>
-                    }
-                    @if (item.company != null)
-                    {
-                        @Html.DisplayFor(modelItem => item.company.name)
-                    }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.place)
-            </td>
-            <td>
-                @if(item.withdraw == null)
-                {
-                    <a>Not defined</a>
-                }
-                @if (item.withdraw != null)
-                {
-                    @Html.DisplayFor(modelItem => item.withdraw)
-                }
-            </td>
-            <td>
-                @if (item.deliver == null)
-                {
-                    <a>Not defined</a>
-                }
-                @if (item.deliver != null)
-                {
-                    @Html.DisplayFor(modelItem => item.deliver)
-                }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.costPerDay)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.VehicleList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.brand)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.model)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.type)
+                </td>
+                <td>
+                    
+                    @Html.DisplayFor(modelItem => item.company.name)
+                </td>
+                <td> 
+                    @Html.DisplayFor(modelItem => item.company.classification)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.place)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.costPerDay)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

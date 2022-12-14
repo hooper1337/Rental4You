@@ -265,9 +265,6 @@ namespace Rental4You.Migrations
                     b.Property<int>("costPerDay")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("deliver")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("model")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -279,9 +276,6 @@ namespace Rental4You.Migrations
                     b.Property<string>("type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("withdraw")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

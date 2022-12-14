@@ -14,14 +14,14 @@ namespace Rental4You.Models
         public string type { set; get; }
         [Display(Name = "Place", Prompt = "Insert vehicle place...")]
         public string place { set; get; }
-        [Display(Name = "Withdraw Date", Prompt = "Choose vechicle withdraw date...")]
-        public DateTime ?withdraw { set; get; }
-        [Display(Name = "Delivery Date", Prompt = "Choose vechicle delivery date...")]
-        public DateTime ?deliver { set; get; }
-        [Display(Name = "Cost/Day", Prompt = "Insert vehicle cost per day...")]
+        // Need to add them to database
+        // [Display(Name = "Withdraw Date", Prompt = "Choose vechicle withdraw date...")]
+        // public int withdrawDate { set; get; }
+
+        [Display(Name = "Cost Per Day", Prompt = "Choose the vehicle cost per day...")]
         public int costPerDay { set; get; }
-        [Display(Name = "Company", Prompt = "Choose vehicle company...")]
         public int? CompanyId { get; set; }
+        [Display(Name = "Company", Prompt = "Choose vehicle company...")]
         public Company? company { set; get; }
 
         [Display(Name = "Available", Prompt = "Is this vehicle available...")]
