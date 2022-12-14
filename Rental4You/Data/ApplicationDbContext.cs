@@ -4,7 +4,7 @@ using Rental4You.Models;
 
 namespace Rental4You.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Vehicle> vehicles { set; get; }
         public DbSet<Company> companies { set; get; }
