@@ -32,10 +32,11 @@ namespace Rental4You.Controllers
             string? TextToSearch, 
             [Bind("TextToSearch,Order")] SearchVehicleViewModel pesquisaCurso)
         {
-            // SearchVehicleViewModel pesquisaVM = new SearchVehicleViewModel();
+            IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
-                pesquisaCurso.VehicleList = await _context.vehicles.ToListAsync(); // .Include("categoria")
+                IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
+                pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             }
             else
             {
@@ -60,6 +61,8 @@ namespace Rental4You.Controllers
             if (pesquisaCurso.Order == 2)
                 pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.costPerDay).ToList();
 
+
+            pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             return View(pesquisaCurso);
         }
 
