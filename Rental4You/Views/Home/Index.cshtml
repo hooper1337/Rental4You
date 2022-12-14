@@ -17,14 +17,14 @@
                 <select asp-for="place" 
                         asp-items="ViewBag.LocationList"
                         class="form-control">
-                    <option value="" disabled selected>Location</option>
+                    <option value="" selected>Location</option>
                 </select>
             </div>
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
                 <select asp-for="type"
                         asp-items="ViewBag.TypeList"
                         class="form-control">
-                    <option value="" disabled selected>Type</option>
+                    <option value="" selected>Type</option>
                 </select>
             </div>
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
@@ -32,13 +32,13 @@
                 <select asp-for="costPerDay"
                         asp-items="ViewBag.withdrawDateList"
                         class="form-control">
-                    <option value="" disabled selected>Pickup Date</option>
+                    <option value="" selected>Pickup Date</option>
                 </select>
             </div>
                 <div class="col-xl-2 col-lg-4 col-md-6 px-2">
                 <input type="text" name="TextToSearch"
-                    id="TextToSearch" placeholder="Text to Search"
-                    class="form-control form-control-sm" />
+                    id="TextToSearch" placeholder="General Search"
+                    class="form-control" />
             </div>
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
                 <button class="btn btn-primary btn-block mb-3" type="submit" style="height: 50px;">Search</button>

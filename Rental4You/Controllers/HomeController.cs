@@ -22,12 +22,24 @@ namespace Rental4You.Controllers
 
         public IActionResult Index()
         {
-            ViewData["LocationList"] = new SelectList(_context.vehicles.ToList(), "Id", "place");
-            ViewData["TypeList"] = new SelectList(_context.vehicles.ToList(), "Id", "type"); //can't get repetitions in list to go away .Distinct()
+            var uniqueVehiclesPlace = from p in _context.vehicles
+                                      group p by new { p.place } //or group by new {p.Id, p.Whatever}
+                                      into mygroup
+                                      select mygroup.FirstOrDefault();
+            ViewData["LocationList"] = new SelectList(uniqueVehiclesPlace.ToList(), "Id", "place");
+
+            var uniqueVehiclesTypes = from p in _context.vehicles
+                                      group p by new { p.type }
+                               into mygroup
+                                      select mygroup.FirstOrDefault();
+            ViewData["TypeList"] = new SelectList(uniqueVehiclesTypes.ToList(), "Id", "type");
             // ViewData["withdrawDateList"] = new SelectList(_context.vehicles.ToList(), "Id", "withdrawDate"); // need to change to withdrawDate
 
             return View();
         }
+
+
+
 
         public IActionResult Privacy()
         {

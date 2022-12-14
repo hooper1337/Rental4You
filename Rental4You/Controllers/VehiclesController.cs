@@ -21,15 +21,6 @@ namespace Rental4You.Controllers
                 _context = context;
             }
 
-        // GET: Vehicles
-        /*
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.vehicles.Include("company").ToListAsync());
-        }
-        */
-
-
         // ---------- Search ----------
         public async Task<IActionResult> Index(
             string? TextToSearch, 
@@ -37,18 +28,22 @@ namespace Rental4You.Controllers
             [Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle
             )
         {
+            IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
-                pesquisaCurso.VehicleList = await _context.vehicles.Include("company").ToListAsync(); // .Include("categoria")
+                //IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
+                //pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             }
             else
             {
-                pesquisaCurso.VehicleList = await _context.vehicles.Include("company"). // Include("categoria").
+                searchResults = _context.vehicles.Include("company"). // Include("categoria").
                     Where(c => 
                                 c.type.Contains(TextToSearch) ||
                                 c.place.Contains(TextToSearch) ||
-                                c.costPerDay.ToString().Contains(TextToSearch)
-                         ).ToListAsync();
+                                c.costPerDay.ToString().Contains(TextToSearch) ||
+                                c.brand.Contains(TextToSearch) ||
+                                c.company.name.Contains(TextToSearch)
+                         );
 
                 pesquisaCurso.TextToSearch = TextToSearch;
             }
@@ -56,18 +51,20 @@ namespace Rental4You.Controllers
             if (vehicle.place != null) {
                 // vehicle.place only has the ID of the vehicle that has the place we want to show
                 var placeToSearch = _context.vehicles.Find(Convert.ToInt32(vehicle.place)).place;
-                pesquisaCurso.VehicleList = await _context.vehicles.Include("company"). // Include("categoria").
-                    Where(c => c.place.Equals(placeToSearch)).ToListAsync();
+                searchResults = searchResults. // Include("categoria").
+                    Where(c => c.place.Equals(placeToSearch));
             }
             if (vehicle.type != null)
             {
                 var typeToSearch = _context.vehicles.Find(Convert.ToInt32(vehicle.type)).type;
-                pesquisaCurso.VehicleList = await _context.vehicles.Include("company"). // Include("categoria").
-                    Where(c => c.type.Equals(typeToSearch)).ToListAsync();
+                searchResults = searchResults. // Include("categoria").
+                    Where(c => c.type.Equals(typeToSearch));
             }
 
+            pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
 
+            // Ordering
             /*  <option value="1">Lowest Price</option>
                 <option value="2">Highest Price</option>
                 <option value="3">Lowest Company Classification</option>
