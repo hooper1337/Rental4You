@@ -38,8 +38,11 @@ namespace Rental4You.Controllers
             )
         {
 
+            // IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
+
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
-                pesquisaCurso.VehicleList = await _context.vehicles.Include("company").ToListAsync(); // .Include("categoria")
+                IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
+                pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             }
             else
             {
@@ -81,6 +84,8 @@ namespace Rental4You.Controllers
             if (pesquisaCurso.Order == 4)
                 pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.company.classification).ToList();
 
+
+            // pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             return View(pesquisaCurso);
         }
 
