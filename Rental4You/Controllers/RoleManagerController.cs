@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Rental4You.Data;
 
 namespace Rental4You.Controllers
 {
@@ -11,12 +13,15 @@ namespace Rental4You.Controllers
         {
             _roleManager = roleManager;
         }
+
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _roleManager.Roles.ToListAsync());
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddRole(string roleName)
         {
             if (roleName != null)
@@ -24,6 +29,7 @@ namespace Rental4You.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(string role)
         {
             if (role != null)
