@@ -258,6 +258,42 @@ namespace Rental4You.Migrations
                     b.ToTable("companies");
                 });
 
+            modelBuilder.Entity("Rental4You.Models.Reservation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ApplicationUserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("BeginDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateTimeOfRequest")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("vehicleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserID");
+
+                    b.HasIndex("vehicleId");
+
+                    b.ToTable("reservations");
+                });
+
             modelBuilder.Entity("Rental4You.Models.Vehicle", b =>
                 {
                     b.Property<int>("Id")
@@ -347,6 +383,25 @@ namespace Rental4You.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Rental4You.Models.Reservation", b =>
+                {
+                    b.HasOne("Rental4You.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rental4You.Models.Vehicle", "vehicle")
+                        .WithMany()
+                        .HasForeignKey("vehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("vehicle");
                 });
 
             modelBuilder.Entity("Rental4You.Models.Vehicle", b =>

@@ -1,0 +1,54 @@
+﻿@model Rental4You.ViewModels.ReservationsViewModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+<h4>Agendamento - Pedido</h4>
+<hr />
+
+<!-- Ex18 -->
+@if(User.Identity.IsAuthenticated){
+
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Calcular">
+                <div asp-validation-summary="All" class="text-danger"></div>
+                <div class="form-group">
+                    <label asp-for="vehicleId" class="control-label"></label>
+                    <select asp-for="vehicleId" class="form-control" asp-items="ViewBag.TipoDeAulaId"></select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Cliente" class="control-label"></label>
+                    <input asp-for="Cliente" class="form-control" />
+                    <span asp-validation-for="Cliente" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="BeginDate" class="control-label"></label>
+                    <input asp-for="BeginDate" class="form-control" />
+                    <span asp-validation-for="BeginDate" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="EndDate" class="control-label"></label>
+                    <input asp-for="EndDate" class="form-control" />
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Calcular" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+} else {
+    <p class="alert alert-warning"> 
+        Só utilizadoers autenticados é que podem efetuar agendamento
+        </p>
+}
+

@@ -1,0 +1,49 @@
+﻿@model Rental4You.Models.Reservation
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout2.cshtml";
+}
+
+
+<h4>Agendamento - Confirmação</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <input type="hidden" asp-for="Price" />
+            <input type="hidden" asp-for="vehicleId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label class="control-label">Tipo de Aula</label>
+                <input type="text" class="form-control form-control-lg" readonly disabled value="@Model.vehicle.brand" />
+            </div>
+            <div class="form-group">
+                <label asp-for="BeginDate" class="control-label"></label>
+                <input asp-for="BeginDate" class="form-control" readonly/>
+                <span asp-validation-for="BeginDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EndDate" class="control-label"></label>
+                <input asp-for="EndDate" class="form-control" readonly/>
+                <span asp-validation-for="EndDate" class="text-danger"></span>
+            </div>                        
+           
+            <div class="form-group pt-4">
+                <p class="alert alert-info">Este pedido de agendamento tem um custo de  <b>@Model.Price</b> Euros.
+                    
+                    </p>
+            </div>
+            <div class="form-group">
+                <p>Por favor escolha uma das seguintes opções:</p>
+                <input type="submit" value="Confirmar Agendamento" class="btn btn-primary" />
+                <a class="btn btn-warning" asp-controller="Agendamentos" asp-action="Pedido">Cancelar pedido</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

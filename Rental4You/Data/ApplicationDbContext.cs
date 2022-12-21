@@ -8,11 +8,12 @@ namespace Rental4You.Data
     {
         public DbSet<Vehicle> vehicles { set; get; }
         public DbSet<Company> companies { set; get; }
+        public DbSet<Reservation> reservations { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
-        
+        // public DbSet<PWEB_AulasP_2223.Models.TipoDeAula> TipoDeAula { get; set; } ?
     }
 }
