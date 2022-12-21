@@ -1,0 +1,45 @@
+﻿@model IEnumerable<Rental4You.ViewModels.UserRolesViewModel>
+@{
+	ViewData["Title"] = "Index";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>User Roles</h1>
+<table class="table table-striped table-hover table-bordered mt-4">
+	<thead>	
+		<tr>
+			<th>Username</th>
+			<th>Id</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Roles</th>
+            <th>Action</th>
+		</tr>
+	 </thead>
+	 <tbody>
+@foreach (var item in Model) 
+{
+            <tr>
+                <td>
+                    @item.Username
+                </td>
+                <td>
+                    @item.UserId
+                </td>
+                <td>
+                    @item.firstName
+                </td>
+                <td>
+                    @item.lastName
+                </td>
+                <td>
+                    @string.Join(" , ", item.Roles.ToList())
+                </td>
+                <td>
+                    <a class="btn-primary btn" asp-action="Details" asp-controller="UserRolesManager" asp-route-userId="@item.UserId">Edit Roles</a>
+                </td>
+            </tr>
+        }
+
+	</tbody>
+</table>
