@@ -24,10 +24,19 @@ namespace Rental4You.Controllers
         // ---------- Search ----------
         public async Task<IActionResult> Index(
             string? TextToSearch, 
-            [Bind("TextToSearch,Order")] SearchVehicleViewModel pesquisaCurso,
+            [Bind("TextToSearch,Order,BeginDateSearch,EndDateSearch")] SearchVehicleViewModel pesquisaCurso,
             [Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle
             )
         {
+
+            if ( // if not both are filled
+                    ( pesquisaCurso.BeginDateSearch == default(DateTime) && pesquisaCurso.EndDateSearch != default(DateTime) ) ||
+                    ( pesquisaCurso.BeginDateSearch != default(DateTime) && pesquisaCurso.EndDateSearch == default(DateTime) )
+                )
+            {
+                // should give an error
+            }
+
             IQueryable<Vehicle> searchResults = _context.vehicles.Include("company").Include("reservations"); // .Include("categoria")
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
@@ -61,6 +70,34 @@ namespace Rental4You.Controllers
                     Where(c => c.type.Equals(typeToSearch));
             }
 
+            // Check the dates
+            IQueryable<Vehicle> filteredSearchResults = searchResults;
+
+            foreach (Vehicle veh in searchResults)
+            {
+                bool available = true;
+
+                // Iterate through each reservation for this vehicle
+                foreach (Reservation reservation in veh.reservations)
+                {
+                    // Check if the time frame of this reservation overlaps with the time frame we're searching for
+                    if ((reservation.BeginDate <= pesquisaCurso.EndDateSearch && reservation.EndDate >= pesquisaCurso.BeginDateSearch) ||
+                        (reservation.EndDate >= pesquisaCurso.BeginDateSearch && reservation.BeginDate <= pesquisaCurso.EndDateSearch))
+                    {
+                        available = false;
+                        break;
+                    }
+                }
+
+                // If the vehicle is not available, remove it from the filtered search results
+                if (!available)
+                {
+                    filteredSearchResults = filteredSearchResults.Where(v => v.Id != veh.Id);
+                }
+            }
+            searchResults = filteredSearchResults;
+
+
             pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
 
@@ -84,7 +121,7 @@ namespace Rental4You.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Index(
-            [Bind("TextToSearch,Order")]
+            [Bind("TextToSearch,Order,StartDate,BeginDateSearch,EndDateSearch")]
             SearchVehicleViewModel pesquisaCurso
             )
         {

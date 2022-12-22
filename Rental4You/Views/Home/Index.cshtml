@@ -28,7 +28,16 @@
                 </select>
             </div>
 
-
+            <div class="col-lg-4 col-md-6 px-2">
+                <div class="input-append date form_datetime">
+                    <label for="BeginDate">Start Date:</label>
+                    <input type="datetime-local" id="BeginDateSearch" name="BeginDateSearch">
+                </div>
+                <div class="input-append date form_datetime">
+                    <label for="EndDate">End Date:</label>
+                        <input type="datetime-local" id="EndDateSearch" name="EndDateSearch">
+                </div>
+            </div>
 
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
                 <input type="text" name="TextToSearch"
@@ -54,7 +63,8 @@
                         <div class="p-3" style="max-width: 900px;">
                             <h4 class="text-white text-uppercase mb-md-3">Rent A Car</h4>
                             <h1 class="display-1 text-white mb-md-4">Best Rental Cars In Your Location</h1>
-                            <a href="" class="btn btn-primary py-md-3 px-md-5 mt-2">Reserve Now</a>
+                            <!-- <a href="" class="btn btn-primary py-md-3 px-md-5 mt-2">Reserve Now</a> -->
+                            <a class="btn btn-primary py-md-3 px-md-5 mt-2" asp-controller="Reservations" asp-action="Pedido">Reserve Now</a>
                         </div>
                     </div>
                 </div>
@@ -64,7 +74,8 @@
                         <div class="p-3" style="max-width: 900px;">
                             <h4 class="text-white text-uppercase mb-md-3">Rent A Car</h4>
                             <h1 class="display-1 text-white mb-md-4">Quality Cars with Unlimited Miles</h1>
-                            <a href="" class="btn btn-primary py-md-3 px-md-5 mt-2">Reserve Now</a>
+                            <!-- <a href="" class="btn btn-primary py-md-3 px-md-5 mt-2">Reserve Now</a> -->
+                            <a class="btn btn-primary py-md-3 px-md-5 mt-2" asp-controller="Reservations" asp-action="Pedido">Reserve Now</a>
                         </div>
                     </div>
                 </div>

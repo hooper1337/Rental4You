@@ -10,8 +10,9 @@ namespace Rental4You.ViewModels
         public int NumResults { get; set; }
         [Display(Name = "Search for Vehicles...", Prompt = "Insert text to search...")]
         public string? TextToSearch { get; set; }
-
         public int Order { get; set; }
 
+        public DateTime BeginDateSearch { get; set; }
+        public DateTime EndDateSearch { get; set; }
     }
 }
