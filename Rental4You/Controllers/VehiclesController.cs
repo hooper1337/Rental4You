@@ -34,7 +34,8 @@ namespace Rental4You.Controllers
                     ( pesquisaCurso.BeginDateSearch != default(DateTime) && pesquisaCurso.EndDateSearch == default(DateTime) )
                 )
             {
-                // should give an error
+                ModelState.AddModelError("BeginDateSearch", "Both start and end dates must be specified.");
+                ModelState.AddModelError("EndDateSearch", "Both start and end dates must be specified.");
             }
 
             IQueryable<Vehicle> searchResults = _context.vehicles.Include("company").Include("reservations"); // .Include("categoria")
