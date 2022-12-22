@@ -2,10 +2,10 @@
 
 @{
     ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout2.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>My Reservations</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -14,49 +14,41 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.BeginDate)
+                Username
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
+                FirstName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.DateTimeOfRequest)
+                LastName
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.vehicle)
+                Brand
+            </th>
+            <th>
+                Begin Date
+            </th>
+            <th>
+                End Date
+            </th>
+            <th>
+                Price
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.BeginDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateTimeOfRequest)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.vehicle.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ApplicationUser.UserName</td>
+                <td>@item.ApplicationUser.firstName</td>
+                <td>@item.ApplicationUser.lastName</td>
+                <td>@Html.DisplayFor(modelItem => item.vehicle.brand)</td>
+                <td>@Html.DisplayFor(modelItem => item.BeginDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.EndDate)</td>
+                <td>@Html.DisplayFor(modelItem => item.Price)</td>
+            </tr>
+        }
     </tbody>
 </table>

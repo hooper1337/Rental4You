@@ -2,11 +2,11 @@
 
 @{
     ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout2.cshtml";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
-<h4>Agendamento - Confirmação</h4>
+<h4>Reservation - Confirmation</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -30,14 +30,14 @@
             </div>                        
            
             <div class="form-group pt-4">
-                <p class="alert alert-info">Este pedido de agendamento tem um custo de  <b>@Model.Price</b> Euros.
+                <p class="alert alert-info">This request has a cost of:  <b>@Model.Price</b> Euros.
                     
                     </p>
             </div>
             <div class="form-group">
                 <p>Por favor escolha uma das seguintes opções:</p>
-                <input type="submit" value="Confirmar Agendamento" class="btn btn-primary" />
-                <a class="btn btn-warning" asp-controller="Agendamentos" asp-action="Pedido">Cancelar pedido</a>
+                <input type="submit" value="Confirm Reservation?" class="btn btn-primary" />
+                <a class="btn btn-warning" asp-controller="Reservations" asp-action="Pedido">Cancel Request</a>
             </div>
         </form>
     </div>

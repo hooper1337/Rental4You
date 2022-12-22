@@ -30,7 +30,10 @@ namespace Rental4You.Controllers
 
         public async Task<IActionResult> Pedido()
         {
-            ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Brand");
+            // ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Brand");
+
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id");
+
             return View();
         }
 
@@ -38,7 +41,7 @@ namespace Rental4You.Controllers
         public async Task<IActionResult> Calcular([Bind("Cliente,BeginDate,EndDate,vehicleId")] ReservationsViewModel request)
         {
             // ViewData["Vehicle"]
-            ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Brand");
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id");
 
             double NrDays = 0;
 
@@ -61,7 +64,7 @@ namespace Rental4You.Controllers
                 x.BeginDate = request.BeginDate;
                 x.vehicleId = request.vehicleId;
 
-                x.Price = vehicle.costPerDay * (decimal)NrDays;
+                x.Price = Math.Round(vehicle.costPerDay * (decimal)NrDays);
                 x.vehicle = vehicle;
 
                 return View("PedidoConfirmacao", x);
@@ -75,8 +78,17 @@ namespace Rental4You.Controllers
         [Authorize] // só utilizadores autenticados têm acesso ao controler
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.reservations.Include(a => a.vehicle);
-            return View(await applicationDbContext.ToListAsync());
+            // Index
+            //var applicationDbContext = _context.reservations.Include(a => a.vehicle);
+            //return View(await applicationDbContext.ToListAsync());
+
+            // My reservations
+            var agendamentos = _context.reservations.
+            Include(a => a.vehicle).
+            Include(a => a.ApplicationUser).
+            Where(a => a.ApplicationUserID == _userManager.GetUserId(User));
+
+            return View(await agendamentos.ToListAsync());
         }
 
         // GET: Agendamentos/Details/5
@@ -99,10 +111,10 @@ namespace Rental4You.Controllers
         }
 
         // GET: Agendamentos/Create
-        [Authorize(Roles = "Cliente")]
+        [Authorize(Roles = "Client")]
         public IActionResult Create()
         {
-            ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Id"); //???
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id");
             return View();
         }
 
@@ -111,7 +123,7 @@ namespace Rental4You.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Cliente")]
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> Create(
             [Bind("Id,BeginDate,EndDate,Price,DateTimeOfRequest,vehicleId")] Reservation reserv)
         {
@@ -129,7 +141,8 @@ namespace Rental4You.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Id", reserv.vehicleId); // _context.TipoDeAula?
+            //ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Id", reserv.vehicleId); // _context.TipoDeAula?
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id", reserv.vehicleId);
             return View(reserv);
         }
 
@@ -147,7 +160,7 @@ namespace Rental4You.Controllers
             {
                 return NotFound();
             }
-            ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Id", reservation.vehicleId);
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id", reservation.vehicleId);
             return View(reservation);
         }
 
@@ -185,7 +198,7 @@ namespace Rental4You.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Id", reserv.vehicleId);
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id", reserv.vehicleId);
             return View(reserv);
         }
 
@@ -207,18 +220,6 @@ namespace Rental4You.Controllers
             }
 
             return View(agendamento);
-        }
-
-        // Get Agendamentos
-        [Authorize]
-        public async Task<IActionResult> MyReservations() // Vai buscar o nas views por defeito a view com o mesmo nome do método
-        {
-            var agendamentos = _context.reservations.
-                Include(a => a.vehicle).
-                Include(a => a.ApplicationUser).
-                Where(a => a.ApplicationUserID == _userManager.GetUserId(User));
-
-            return View(await agendamentos.ToListAsync());
         }
 
         // POST: Agendamentos/Delete/5
