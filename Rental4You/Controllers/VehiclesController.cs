@@ -28,15 +28,15 @@ namespace Rental4You.Controllers
             [Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle
             )
         {
-            IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
+            IQueryable<Vehicle> searchResults = _context.vehicles.Include("company").Include("reservations"); // .Include("categoria")
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
-                //IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
+                //IQueryable<Vehicle> searchResults = _context.vehicles.Include("company").Include("reservations"); // .Include("categoria")
                 //pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             }
             else
             {
-                searchResults = _context.vehicles.Include("company"). // Include("categoria").
+                searchResults = _context.vehicles.Include("company").Include("reservations"). // Include("categoria").
                     Where(c => 
                                 c.type.Contains(TextToSearch) ||
                                 c.place.Contains(TextToSearch) ||
@@ -92,14 +92,14 @@ namespace Rental4You.Controllers
             if (string.IsNullOrEmpty(pesquisaCurso.TextToSearch))
             {
                 pesquisaCurso.VehicleList =
-                    await _context.vehicles.Include("company").ToListAsync(); // .Include("categoria")
+                    await _context.vehicles.Include("company").Include("reservations").ToListAsync(); // .Include("categoria")
 
                 pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
             }
             else
             {
                 pesquisaCurso.VehicleList =
-                    await _context.vehicles.Include("company").Where( // Include(c => c.categoria).
+                    await _context.vehicles.Include("company").Include("reservations").Where( // Include(c => c.categoria).
                         c => c.brand.Contains(pesquisaCurso.TextToSearch) ||
                                 c.model.Contains(pesquisaCurso.TextToSearch) ||
                                 c.type.Contains(pesquisaCurso.TextToSearch) ||
@@ -134,7 +134,7 @@ namespace Rental4You.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.vehicles.Include("company")
+            var vehicle = await _context.vehicles.Include("company").Include("reservations")
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {

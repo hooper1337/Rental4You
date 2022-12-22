@@ -52,6 +52,31 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.costPerDay)
         </dd>
+
+        <dd class="col-sm-10">
+            @if (Model.reservations == null)
+            {
+                <a>No vehicles to display</a>
+            }
+            @if (Model.reservations != null)
+            {
+                var counter = 0;
+                @foreach (var reserv in Model.reservations)
+                {
+                    var vehicleDisplay = "reservation ID: " + reserv.Id; // + " reservation by " + reserv.ApplicationUser.firstName;
+                    counter++;
+                    if (counter == Model.reservations.Count)
+                    {
+                        vehicleDisplay += " ";
+                    }
+                    else
+                    {
+                        vehicleDisplay += ", ";
+                    }
+                    @Html.DisplayFor(modelItem => vehicleDisplay)
+                }
+            }
+        </dd>
     </dl>
 </div>
 <div>
