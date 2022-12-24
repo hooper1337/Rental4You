@@ -36,12 +36,18 @@ namespace Rental4You.Controllers
             {
                 ModelState.AddModelError("BeginDateSearch", "Both start and end dates must be specified.");
                 ModelState.AddModelError("EndDateSearch", "Both start and end dates must be specified.");
+
+                return RedirectToAction("Index", "Home", new { error = "If you specify a date, you need to specify them both" });
             }
 
-            //if (ModelState.IsValid)
-            //{
-            //    return View("index", searchVehicle);
-            //}
+            if (pesquisaCurso.EndDateSearch < pesquisaCurso.BeginDateSearch)
+            {
+                ModelState.AddModelError("BeginDateSearch", "End Date must be set after BeginDate");
+                ModelState.AddModelError("EndDateSearch", "End Date must be set after BeginDate");
+
+                return RedirectToAction("Index", "Home", new { error = "The end date must be after the start date." });
+            }
+
 
             IQueryable<Vehicle> searchResults = _context.vehicles.Include("company").Include("reservations"); // .Include("categoria")
 

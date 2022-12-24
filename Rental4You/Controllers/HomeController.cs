@@ -20,8 +20,10 @@ namespace Rental4You.Controllers
         }
 
 
-        public IActionResult Index()
+        public IActionResult Index(string? error)
         {
+            ViewData["ErrorMessage"] = error;
+
             var uniqueVehiclesPlace = from p in _context.vehicles
                                       group p by new { p.place } //or group by new {p.Id, p.Whatever}
                                       into mygroup

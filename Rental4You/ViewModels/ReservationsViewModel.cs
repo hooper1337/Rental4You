@@ -7,8 +7,6 @@ namespace Rental4You.ViewModels
 {
     public class ReservationsViewModel
     {
-        [Display(Name = "Name Client", Prompt = "Incert name of the client")]
-        public string Cliente { get; set; }
         [Display(Name = "Begin Date", Prompt = "yyyy-mm-dd")]
         public DateTime BeginDate { get; set; }
         [Display(Name = "End date", Prompt = "yyyy-mm-dd")]

@@ -38,7 +38,7 @@ namespace Rental4You.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Calcular([Bind("Cliente,BeginDate,EndDate,vehicleId")] ReservationsViewModel request)
+        public async Task<IActionResult> Calcular([Bind("BeginDate,EndDate,vehicleId")] ReservationsViewModel request)
         {
             // ViewData["Vehicle"]
             ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id");

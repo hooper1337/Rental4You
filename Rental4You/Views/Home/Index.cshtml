@@ -51,7 +51,10 @@
     </div>
     }
     <!-- Search End -->
-
+    @if (ViewData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@ViewData["ErrorMessage"]</div>
+    }
 
     <!-- Carousel Start -->
     <div class="container-fluid p-0" style="margin-bottom: 90px;">
