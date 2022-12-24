@@ -7,9 +7,6 @@
 
 <h1>My Reservations</h1>
 
-<!-- <p>
-    <a asp-action="Create">Create New</a>
-</p> -->
 <table class="table">
     <thead>
         <tr>
@@ -17,10 +14,10 @@
                 Username
             </th>
             <th>
-                FirstName
+                First Name
             </th>
             <th>
-                LastName
+                Last Name
             </th>
             <th>
                 Brand
@@ -48,6 +45,7 @@
                 <td>@Html.DisplayFor(modelItem => item.BeginDate)</td>
                 <td>@Html.DisplayFor(modelItem => item.EndDate)</td>
                 <td>@Html.DisplayFor(modelItem => item.Price)</td>
+                <td><a asp-action="Details" asp-route-id="@item.Id">Details</a> </td>
             </tr>
         }
     </tbody>

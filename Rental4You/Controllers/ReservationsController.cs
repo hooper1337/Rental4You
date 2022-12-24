@@ -10,9 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Rental4You.Data;
 using Rental4You.Models;
 using Rental4You.ViewModels;
-using Rental4You.Data;
-using Rental4You.Models;
-
 namespace Rental4You.Controllers
 {
 
@@ -28,20 +25,17 @@ namespace Rental4You.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Pedido()
+        public IActionResult Request()
         {
-            // ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Brand");
-
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id");
-
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand");
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Calcular([Bind("BeginDate,EndDate,vehicleId")] ReservationsViewModel request)
+        public IActionResult Calculate([Bind("BeginDate,EndDate,vehicleId")] ReservationsViewModel request)
         {
             // ViewData["Vehicle"]
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id");
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand");
 
             double NrDays = 0;
 
@@ -51,7 +45,7 @@ namespace Rental4You.Controllers
             var vehicle = _context.vehicles.Include("company").Include("reservations").FirstOrDefault(v => v.Id == request.vehicleId);
             if (vehicle == null)
             {
-                ModelState.AddModelError("TipoDeAulaId", "Invalid chosen vehicle");
+                ModelState.AddModelError("vehicleId", "Invalid chosen vehicle");
             }
 
             bool available = true;
@@ -84,11 +78,11 @@ namespace Rental4You.Controllers
                 x.Price = Math.Round(vehicle.costPerDay * (decimal)NrDays);
                 x.vehicle = vehicle;
 
-                return View("PedidoConfirmacao", x);
+                return View("RequestConfirmation", x);
 
             }
 
-            return View("pedido", request);
+            return View("request", request);
         }
 
         // GET: reservations
@@ -100,12 +94,12 @@ namespace Rental4You.Controllers
             //return View(await applicationDbContext.ToListAsync());
 
             // My reservations
-            var agendamentos = _context.reservations.
+            var reservations = _context.reservations.
             Include(a => a.vehicle).
             Include(a => a.ApplicationUser).
             Where(a => a.ApplicationUserID == _userManager.GetUserId(User));
 
-            return View(await agendamentos.ToListAsync());
+            return View(await reservations.ToListAsync());
         }
 
         // GET: Agendamentos/Details/5
@@ -116,22 +110,22 @@ namespace Rental4You.Controllers
                 return NotFound();
             }
 
-            var agendamento = await _context.reservations
+            var reservation = await _context.reservations
                 .Include(a => a.vehicle)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (agendamento == null)
+            if (reservation == null)
             {
                 return NotFound();
             }
 
-            return View(agendamento);
+            return View(reservation);
         }
 
         // GET: Agendamentos/Create
         [Authorize(Roles = "Client")]
         public IActionResult Create()
         {
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id");
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand");
             return View();
         }
 
@@ -159,7 +153,7 @@ namespace Rental4You.Controllers
                 return RedirectToAction(nameof(Index));
             }
             //ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Id", reserv.vehicleId); // _context.TipoDeAula?
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id", reserv.vehicleId);
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
             return View(reserv);
         }
 
@@ -177,7 +171,7 @@ namespace Rental4You.Controllers
             {
                 return NotFound();
             }
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id", reservation.vehicleId);
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reservation.vehicleId);
             return View(reservation);
         }
 
@@ -215,7 +209,7 @@ namespace Rental4You.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "Id", reserv.vehicleId);
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
             return View(reserv);
         }
 

@@ -6,14 +6,19 @@ namespace Rental4You.Models
     public class Reservation
     {
         public int Id { get; set; }
+        [Display(Name = "Begin Date")]
         public DateTime BeginDate { get; set; }
+        [Display(Name = "End Date")]
         public DateTime EndDate { get; set; }
+        [Display(Name = "Price")]
         public decimal Price { get; set; }
+        [Display(Name = "Date of Request")]
         public DateTime DateTimeOfRequest { get; set; }
-        public int vehicleId { get; set; }
-        public Vehicle vehicle { get; set; }
 
-        // relacionamento com a endtidade ApplicationUser
+        [Display(Name = "Vehicle ID:")]
+        public int vehicleId { get; set; }
+        [Display(Name = "Vehicle")]
+        public Vehicle vehicle { get; set; }
         public string ApplicationUserID { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
     }

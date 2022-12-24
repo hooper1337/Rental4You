@@ -15,7 +15,7 @@
             <input type="hidden" asp-for="vehicleId" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label class="control-label">Tipo de Aula</label>
+                <label class="control-label">Vehicle</label>
                 <input type="text" class="form-control form-control-lg" readonly disabled value="@Model.vehicle.brand" />
             </div>
             <div class="form-group">
@@ -30,20 +30,14 @@
             </div>                        
            
             <div class="form-group pt-4">
-                <p class="alert alert-info">This request has a cost of:  <b>@Model.Price</b> Euros.
-                    
-                    </p>
+                <p class="alert alert-info">This request has a cost of:  <b>@Model.Price</b> Euros. </p>
             </div>
             <div class="form-group">
-                <p>Por favor escolha uma das seguintes opções:</p>
+                <p>Please choose of the options above:</p>
                 <input type="submit" value="Confirm Reservation?" class="btn btn-primary" />
-                <a class="btn btn-warning" asp-controller="Reservations" asp-action="Pedido">Cancel Request</a>
+                <a class="btn btn-danger" asp-controller="Reservations" asp-action="Request">Cancel</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 

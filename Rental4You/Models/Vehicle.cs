@@ -26,7 +26,6 @@ namespace Rental4You.Models
 
         [Display(Name = "Available", Prompt = "Is this vehicle available...")]
         public Boolean available { set; get; }
-
         public ICollection<Reservation> reservations { get; set; }
     }
 
