@@ -38,6 +38,11 @@ namespace Rental4You.Controllers
                 ModelState.AddModelError("EndDateSearch", "Both start and end dates must be specified.");
             }
 
+            //if (ModelState.IsValid)
+            //{
+            //    return View("index", searchVehicle);
+            //}
+
             IQueryable<Vehicle> searchResults = _context.vehicles.Include("company").Include("reservations"); // .Include("categoria")
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {

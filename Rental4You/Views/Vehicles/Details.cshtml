@@ -63,7 +63,7 @@
                 var counter = 0;
                 @foreach (var reserv in Model.reservations)
                 {
-                    var vehicleDisplay = "reservation ID: " + reserv.Id; // + " reservation by " + reserv.ApplicationUser.firstName;
+                    var vehicleDisplay = "reservation ID: " + reserv.Id + ", Start Date: " + reserv.BeginDate + ", End Date: " + reserv.EndDate ; <br> //  + " reservation by " + reserv.ApplicationUser.firstName;
                     counter++;
                     if (counter == Model.reservations.Count)
                     {
