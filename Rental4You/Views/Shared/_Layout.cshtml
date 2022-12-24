@@ -84,18 +84,18 @@
                         </div>
                         <div>
                             <!-- https://getbootstrap.com/docs/5.0/components/navbar/ -->
+                            @if (User.Identity.IsAuthenticated)
+                            {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                     Agendamentos
                                 </a>
-                                @if (User.Identity.IsAuthenticated)
-                                {
                                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                         <li><a class="dropdown-item" asp-controller="Reservations" asp-action="Index">My reservations</a></li>
                                         <li><a class="dropdown-item" asp-controller="Reservations" asp-action="Pedido">New Reservation</a></li>
                                     </ul>
-                                }
                             </li>
+                            }
                         </div>
                         <div>
                                 <partial name="_LoginPartial" />
