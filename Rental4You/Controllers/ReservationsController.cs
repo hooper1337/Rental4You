@@ -48,10 +48,28 @@ namespace Rental4You.Controllers
             if (request.BeginDate > request.EndDate)
                 ModelState.AddModelError("BeginDate", "The start date cannot be greater than the end date");
 
-            var vehicle = _context.vehicles.Find(request.vehicleId);
+            var vehicle = _context.vehicles.Include("company").Include("reservations").FirstOrDefault(v => v.Id == request.vehicleId);
             if (vehicle == null)
             {
                 ModelState.AddModelError("TipoDeAulaId", "Invalid chosen vehicle");
+            }
+
+            bool available = true;
+            // Iterate through each reservation for this vehicle
+            foreach (Reservation reservation in vehicle.reservations)
+            {
+                // Check if the time frame of this reservation overlaps with the time frame we're searching for
+                if ((reservation.BeginDate <= request.EndDate && reservation.EndDate >= request.BeginDate) ||
+                    (reservation.EndDate >= request.BeginDate && reservation.BeginDate <= request.EndDate))
+                {
+                    available = false;
+                    break;
+                }
+            }
+            // If the vehicle is not available, remove it from the filtered search results
+            if (!available)
+            {
+                ModelState.AddModelError("BeginDate", "Vehicle already has reservations for choosen time period");
             }
 
             if (ModelState.IsValid)
@@ -59,7 +77,6 @@ namespace Rental4You.Controllers
                 NrDays = (request.EndDate - request.BeginDate).TotalDays;
 
                 Reservation x = new Reservation();
-                // x.Cliente = pedido.Cliente;
                 x.EndDate = request.EndDate;
                 x.BeginDate = request.BeginDate;
                 x.vehicleId = request.vehicleId;
@@ -74,7 +91,7 @@ namespace Rental4You.Controllers
             return View("pedido", request);
         }
 
-        // GET: Agendamentos
+        // GET: reservations
         [Authorize] // só utilizadores autenticados têm acesso ao controler
         public async Task<IActionResult> Index()
         {
