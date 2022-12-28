@@ -76,14 +76,24 @@
                     <div class="navbar-nav ml-auto py-0">
                         <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         <div class="nav-item dropdown">
-                            <a class="nav-item nav-link" asp-area="" asp-controller="Companies" asp-action="Index">Companies</a>
+                            @if (this.User.IsInRole("Admin"))
+                            {
+                                <a class="nav-item nav-link" asp-area="" asp-controller="Companies" asp-action="Index">Companies</a>
+                            }
                         </div>
                         <div class="nav-item dropdown">
-                            <a class="nav-item nav-link" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
+                            @if(this.User.IsInRole("Employer"))
+                            {
+                                <a class="nav-item nav-link" asp-area="" asp-controller="Vehicles" asp-action="CompanyVehicles">Vehicles</a>
+                            }
+                            else
+                            {
+                                <a class="nav-item nav-link" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
+                            } 
                         </div>
                         <div>
                             <!-- https://getbootstrap.com/docs/5.0/components/navbar/ -->
-                            @if (User.Identity.IsAuthenticated)
+                            @if (this.User.IsInRole("Client"))
                             {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -94,6 +104,12 @@
                                         <li><a class="dropdown-item" asp-controller="Reservations" asp-action="Request">New Reservation</a></li>
                                     </ul>
                             </li>
+                            }
+                            else if(this.User.IsInRole("Employer"))
+                            {
+                                <div class="nav-item dropdown">
+                                    <a class="nav-item nav-link" asp-controller="Reservations" asp-action="ListCompanyReservations">Reservations</a>
+                                </div>
                             }
                         </div>
                         <div>

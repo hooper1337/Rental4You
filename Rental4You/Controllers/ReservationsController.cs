@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -25,6 +26,7 @@ namespace Rental4You.Controllers
             _userManager = userManager;
         }
 
+        [Authorize(Roles = "Client")]
         public IActionResult Request()
         {
             ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand");
@@ -32,6 +34,7 @@ namespace Rental4You.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Client")]
         public IActionResult Calculate([Bind("BeginDate,EndDate,vehicleId")] ReservationsViewModel request)
         {
             // ViewData["Vehicle"]
@@ -86,19 +89,23 @@ namespace Rental4You.Controllers
         }
 
         // GET: reservations
-        [Authorize] // só utilizadores autenticados têm acesso ao controler
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> Index()
         {
-            // Index
-            //var applicationDbContext = _context.reservations.Include(a => a.vehicle);
-            //return View(await applicationDbContext.ToListAsync());
-
             // My reservations
             var reservations = _context.reservations.
             Include(a => a.vehicle).
             Include(a => a.ApplicationUser).
             Where(a => a.ApplicationUserID == _userManager.GetUserId(User));
+            return View(await reservations.ToListAsync());
+        }
 
+        [Authorize(Roles = "Employer")]
+        public async Task<IActionResult> ListCompanyReservations()
+        {
+            var applicationUserId = _userManager.GetUserId(User);
+            var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+            var reservations = _context.reservations.Include(v => v.vehicle).Include(a => a.ApplicationUser).Where(r => r.vehicle.CompanyId == employee.CompanyId);
             return View(await reservations.ToListAsync());
         }
 

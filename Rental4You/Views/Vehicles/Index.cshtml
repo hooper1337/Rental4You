@@ -29,12 +29,6 @@ else
     <div class="container-fluid bg-white pt-3 px-lg-5">
         <div class="row mx-n2">
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-                <p>
-                    <small>(<a asp-action="Create">Add new vehicle</a>)</small>
-                </p>
-            </div>
-
-            <div class="col-xl-2 col-lg-4 col-md-6 px-2">
                 <select asp-for="Order" class="custom-select px-4 mb-3" style="height: 50px;">
                     <!-- asp-for="Order" -->
                     <option selected>Order By</option>
@@ -107,9 +101,7 @@ else
                     @Html.DisplayFor(modelItem => item.costPerDay)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
                 </td>
             </tr>
         }

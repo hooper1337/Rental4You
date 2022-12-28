@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,6 +26,7 @@ namespace Rental4You.Controllers
             }
 
         // ---------- Search ----------
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> Index(
             string? TextToSearch, 
             [Bind("TextToSearch,Order,BeginDateSearch,EndDateSearch")] SearchVehicleViewModel pesquisaCurso,
@@ -113,11 +118,6 @@ namespace Rental4You.Controllers
             pesquisaCurso.VehicleList = await searchResults.ToListAsync();
             pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
 
-            // Ordering
-            /*  <option value="1">Lowest Price</option>
-                <option value="2">Highest Price</option>
-                <option value="3">Lowest Company Classification</option>
-                <option value="4">Highest Company Classification</option> */
             if (pesquisaCurso.Order == 1)
                 pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.costPerDay).ToList();
             if (pesquisaCurso.Order == 2)
@@ -132,6 +132,7 @@ namespace Rental4You.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Client")]
         public async Task<IActionResult> Index(
             [Bind("TextToSearch,Order,StartDate,BeginDateSearch,EndDateSearch")]
             SearchVehicleViewModel pesquisaCurso
@@ -161,11 +162,6 @@ namespace Rental4You.Controllers
 
             }
 
-
-            /*  <option value="1">Lowest Price</option>
-                <option value="2">Highest Price</option>
-                <option value="3">Lowest Company Classification</option>
-                <option value="4">Highest Company Classification</option> */
             if (pesquisaCurso.Order == 1)
                 pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.costPerDay).ToList();
             if (pesquisaCurso.Order == 2)
@@ -193,10 +189,19 @@ namespace Rental4You.Controllers
             return View(vehicle);
         }
 
+        [Authorize(Roles = "Employer")]
+        public async Task<IActionResult> CompanyVehicles()
+        {
+            var applicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+            var vehicles = await _context.vehicles.Include("company").Where(v => v.CompanyId == employee.CompanyId).ToListAsync();
+            return View(vehicles);
+        }
+
         // GET: Vehicles/Create
+        [Authorize(Roles = "Employer")]
         public IActionResult Create()
         {
-            ViewData["CompaniesList"] = new SelectList(_context.companies.ToList(), "Id", "name");
             return View();
         }
 
@@ -205,19 +210,23 @@ namespace Rental4You.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle)
+        [Authorize(Roles = "Employer")]
+        public async Task<IActionResult> Create([Bind("Id,brand,model,type,place,withdraw,deliver,costPerDay,available")] Vehicle vehicle)
         {
-            ViewData["CompaniesList"] = new SelectList(_context.companies.ToList(), "Id", "name");
             if (ModelState.IsValid)
             {
+                var applicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+                vehicle.CompanyId = employee.CompanyId;
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(CompanyVehicles));
             }
             return View(vehicle);
         }
 
         // GET: Vehicles/Edit/5
+        [Authorize(Roles = "Employer")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.vehicles == null)
@@ -230,7 +239,6 @@ namespace Rental4You.Controllers
             {
                 return NotFound();
             }
-            ViewData["CompaniesList"] = new SelectList(_context.companies.ToList(), "Id", "name", vehicle.CompanyId);
             return View(vehicle);
         }
 
@@ -239,7 +247,8 @@ namespace Rental4You.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle)
+        [Authorize(Roles = "Employer")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,brand,model,type,place,withdraw,deliver,costPerDay,available")] Vehicle vehicle)
         {
             if (id != vehicle.Id)
             {
@@ -247,11 +256,13 @@ namespace Rental4You.Controllers
             }
 
             ModelState.Remove(nameof(vehicle.company));
-            
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var applicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+                    vehicle.CompanyId = employee.CompanyId;
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
                 }
@@ -266,12 +277,13 @@ namespace Rental4You.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(CompanyVehicles));
             }
             return View(vehicle);
         }
 
         // GET: Vehicles/Delete/5
+        [Authorize(Roles = "Employer")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.vehicles == null)
@@ -293,20 +305,23 @@ namespace Rental4You.Controllers
         // POST: Vehicles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Employer")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.vehicles == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.vehicles'  is null.");
             }
+
             var vehicle = await _context.vehicles.FindAsync(id);
-            if (vehicle != null)
+            var vehiclesReservation = _context.reservations.Include("vehicle").Where(v => v.vehicleId == vehicle.Id).FirstOrDefault();
+            if (vehicle != null && vehiclesReservation == null)
             {
                 _context.vehicles.Remove(vehicle);
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(CompanyVehicles));
         }
 
         private bool VehicleExists(int id)
