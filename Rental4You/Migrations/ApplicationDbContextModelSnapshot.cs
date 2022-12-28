@@ -258,6 +258,32 @@ namespace Rental4You.Migrations
                     b.ToTable("companies");
                 });
 
+            modelBuilder.Entity("Rental4You.Models.Employee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("applicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("available")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("applicationUserId");
+
+                    b.ToTable("employees");
+                });
+
             modelBuilder.Entity("Rental4You.Models.Reservation", b =>
                 {
                     b.Property<int>("Id")
@@ -385,6 +411,23 @@ namespace Rental4You.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Rental4You.Models.Employee", b =>
+                {
+                    b.HasOne("Rental4You.Models.Company", "company")
+                        .WithMany("employers")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rental4You.Models.ApplicationUser", "applicationUser")
+                        .WithMany()
+                        .HasForeignKey("applicationUserId");
+
+                    b.Navigation("applicationUser");
+
+                    b.Navigation("company");
+                });
+
             modelBuilder.Entity("Rental4You.Models.Reservation", b =>
                 {
                     b.HasOne("Rental4You.Models.ApplicationUser", "ApplicationUser")
@@ -394,7 +437,7 @@ namespace Rental4You.Migrations
                         .IsRequired();
 
                     b.HasOne("Rental4You.Models.Vehicle", "vehicle")
-                        .WithMany()
+                        .WithMany("reservations")
                         .HasForeignKey("vehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -415,7 +458,14 @@ namespace Rental4You.Migrations
 
             modelBuilder.Entity("Rental4You.Models.Company", b =>
                 {
+                    b.Navigation("employers");
+
                     b.Navigation("vehicles");
+                });
+
+            modelBuilder.Entity("Rental4You.Models.Vehicle", b =>
+                {
+                    b.Navigation("reservations");
                 });
 #pragma warning restore 612, 618
         }
