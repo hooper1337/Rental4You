@@ -80,6 +80,7 @@ namespace Rental4You.Controllers
 
                 x.Price = Math.Round(vehicle.costPerDay * (decimal)NrDays);
                 x.vehicle = vehicle;
+                x.confirmed = false;
 
                 return View("RequestConfirmation", x);
 
@@ -182,6 +183,38 @@ namespace Rental4You.Controllers
             return View(reservation);
         }
 
+        [Authorize(Roles = "Employer")]
+        public async Task<IActionResult> ConfirmReservation(int Id)
+        {
+            var reservation = _context.reservations.Where(r => r.Id == Id).FirstOrDefault();
+            if(ModelState.IsValid)
+            {
+                if(reservation != null)
+                {
+                    reservation.confirmed = true;
+                    try 
+                    {
+                        _context.Update(reservation);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch(DbUpdateConcurrencyException)
+                    {
+                        if(!ReservationExists(reservation.Id))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(ListCompanyReservations));
+                }
+            }
+            return View(reservation);
+        }
+
+
         // POST: Agendamentos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -258,6 +291,23 @@ namespace Rental4You.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        [Authorize(Roles = "Employer")]
+        public async Task<IActionResult> RejectReservation(int id)
+        {
+            if (_context.reservations == null)
+            {
+                return Problem("Entity set 'ApplicationDbContext.Agendamentos'  is null.");
+            }
+            var reservation = await _context.reservations.FindAsync(id);
+            if (reservation != null)
+            {
+                _context.reservations.Remove(reservation);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ListCompanyReservations));
         }
 
         private bool ReservationExists(int id)

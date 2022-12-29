@@ -308,6 +308,9 @@ namespace Rental4You.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<bool>("confirmed")
+                        .HasColumnType("bit");
+
                     b.Property<int>("vehicleId")
                         .HasColumnType("int");
 

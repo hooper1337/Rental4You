@@ -26,7 +26,6 @@ namespace Rental4You.Controllers
             }
 
         // ---------- Search ----------
-        [Authorize(Roles = "Client")]
         public async Task<IActionResult> Index(
             string? TextToSearch, 
             [Bind("TextToSearch,Order,BeginDateSearch,EndDateSearch")] SearchVehicleViewModel pesquisaCurso,
@@ -132,7 +131,6 @@ namespace Rental4You.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Client")]
         public async Task<IActionResult> Index(
             [Bind("TextToSearch,Order,StartDate,BeginDateSearch,EndDateSearch")]
             SearchVehicleViewModel pesquisaCurso

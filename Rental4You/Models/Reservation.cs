@@ -20,6 +20,8 @@ namespace Rental4You.Models
         [Display(Name = "Vehicle")]
         public Vehicle vehicle { get; set; }
         public string ApplicationUserID { get; set; }
+        [Display(Name = "Confirmed")]
+        public bool confirmed { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
     }
 }

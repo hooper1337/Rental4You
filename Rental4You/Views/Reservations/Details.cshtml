@@ -41,6 +41,19 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.vehicle.Id)
         </dd>
+        @if(User.IsInRole("Employer"))
+        {
+            @if (Model.confirmed == false)
+            {
+                <div class="form-group">
+                    <a class="btn btn-success" asp-route-id="@Model.Id" asp-controller="Reservations" asp-action="ConfirmReservation">Confirm reservation</a>
+                </div>
+            }
+            <div class="form-group">
+                <a class="btn btn-danger" asp-route-id="@Model.Id" asp-controller="Reservations" asp-action="RejectReservation">Reject reservation</a>
+            </div>
+        }
+        
     </dl>
 </div>
 <div>
