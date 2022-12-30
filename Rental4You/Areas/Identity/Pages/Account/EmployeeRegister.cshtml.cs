@@ -67,10 +67,6 @@ namespace Rental4You.Areas.Identity.Pages.Account
             public string lastName { set; get; }
 
             [Required]
-            [Display(Name = "Company Name")]
-            public int CompanyId { get; set; }
-
-            [Required]
             [DataType(DataType.Date)]
             [Display(Name = "Born date")]
             public DateTime bornDate { get; set; }
@@ -93,14 +89,12 @@ namespace Rental4You.Areas.Identity.Pages.Account
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            ViewData["CompaniesList"] = new SelectList(_context.companies.ToList(), "Id", "name");
             ReturnUrl = returnUrl ??= Url.Content("~/"); 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
         public async Task<ActionResult> OnPostAsync(string returnUrl = null)
         {
-            ViewData["CompaniesList"] = new SelectList(_context.companies.ToList(), "Id", "name");
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
@@ -120,17 +114,13 @@ namespace Rental4You.Areas.Identity.Pages.Account
                 {
                     
                     _logger.LogInformation("User created a new account with password.");
-                    //var applicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    //var manager = _context.Managers.Where(x => x.ApplicationUser.Id == applicationUserId).First();
-                    
-                    //Depois retirar esta linha
-                    var company = _context.companies.Where(c => c.Id == Input.CompanyId).FirstOrDefault();
+                    var applicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var manager = _context.managers.Where(x => x.applicationUser.Id == applicationUserId).First();
                     var employee = new Employee
                     {
-                        CompanyId =  company.Id,
+                        CompanyId =  manager.CompanyId,
                         available = true,
-                        applicationUser = user
-                        //manager = manager
+                        applicationUser = user,
                     };
 
                     _context.Update(employee);

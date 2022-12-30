@@ -13,5 +13,6 @@ namespace Rental4You.Models
         [Display(Name = "Car List")]
         public ICollection<Vehicle> vehicles { get; set; }
         public ICollection<Employee> employers { get; set; }
+        public ICollection<Manager> managers { get; set; }
     }
 }

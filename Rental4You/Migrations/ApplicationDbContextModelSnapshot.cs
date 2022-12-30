@@ -284,6 +284,29 @@ namespace Rental4You.Migrations
                     b.ToTable("employees");
                 });
 
+            modelBuilder.Entity("Rental4You.Models.Manager", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CompanyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("applicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("applicationUserId");
+
+                    b.ToTable("managers");
+                });
+
             modelBuilder.Entity("Rental4You.Models.Reservation", b =>
                 {
                     b.Property<int>("Id")
@@ -431,6 +454,23 @@ namespace Rental4You.Migrations
                     b.Navigation("company");
                 });
 
+            modelBuilder.Entity("Rental4You.Models.Manager", b =>
+                {
+                    b.HasOne("Rental4You.Models.Company", "company")
+                        .WithMany("managers")
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Rental4You.Models.ApplicationUser", "applicationUser")
+                        .WithMany()
+                        .HasForeignKey("applicationUserId");
+
+                    b.Navigation("applicationUser");
+
+                    b.Navigation("company");
+                });
+
             modelBuilder.Entity("Rental4You.Models.Reservation", b =>
                 {
                     b.HasOne("Rental4You.Models.ApplicationUser", "ApplicationUser")
@@ -462,6 +502,8 @@ namespace Rental4You.Migrations
             modelBuilder.Entity("Rental4You.Models.Company", b =>
                 {
                     b.Navigation("employers");
+
+                    b.Navigation("managers");
 
                     b.Navigation("vehicles");
                 });
