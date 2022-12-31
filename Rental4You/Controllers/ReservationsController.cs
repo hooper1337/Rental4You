@@ -165,6 +165,24 @@ namespace Rental4You.Controllers
             return View(reserv);
         }
 
+        // GET: Agendamentos/Edit/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null || _context.reservations == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = await _context.reservations.FindAsync(id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reservation.vehicleId);
+            return View(reservation);
+        }
+
         [Authorize(Roles = "Employer")]
         public async Task<IActionResult> ConfirmReservation(int Id)
         {
@@ -196,23 +214,6 @@ namespace Rental4You.Controllers
             return View(reservation);
         }
 
-        // GET: Agendamentos/Edit/5
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.reservations == null)
-            {
-                return NotFound();
-            }
-
-            var reservation = await _context.reservations.FindAsync(id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reservation.vehicleId);
-            return View(reservation);
-        }
 
         // POST: Agendamentos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -221,62 +222,6 @@ namespace Rental4You.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id,
-            [Bind("Id,BeginDate,EndDate,Price,DateTimeOfRequest,vehicleId")] Reservation reserv)
-        {
-            if (id != reserv.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(reserv);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ReservationExists(reserv.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
-            return View(reserv);
-        }
-
-        // GET: Agendamentos/Edit/5
-        [Authorize(Roles = "Employer")]
-        public async Task<IActionResult> VehicleState(int? id)
-        {
-            if (id == null || _context.reservations == null)
-            {
-                return NotFound();
-            }
-
-            var reservation = await _context.reservations.FindAsync(id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reservation.vehicleId);
-            return View(reservation);
-        }
-
-        // POST: Agendamentos/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Employer")]
-        public async Task<IActionResult> VehicleState(int id,
             [Bind("Id,BeginDate,EndDate,Price,DateTimeOfRequest,vehicleId")] Reservation reserv)
         {
             if (id != reserv.Id)

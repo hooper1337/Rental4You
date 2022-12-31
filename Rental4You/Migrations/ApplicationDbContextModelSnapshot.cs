@@ -322,41 +322,11 @@ namespace Rental4You.Migrations
                     b.Property<DateTime>("BeginDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DamageDelivery")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DamageRetrieval")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("DateTimeOfRequest")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EmployerDelivery")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmployerRetrieval")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("NumberOfKmOfVehicleDelivery")
-                        .HasColumnType("int");
-
-                    b.Property<int>("NumberOfKmOfVehicleRetrieval")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ObservationsDelivery")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ObservationsRetrieval")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
