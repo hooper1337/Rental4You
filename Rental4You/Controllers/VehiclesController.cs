@@ -28,7 +28,28 @@ namespace Rental4You.Controllers
             [Bind("Id,brand,model,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle
             )
         {
-            IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")
+
+            if ( // if not both are filled
+                    ( pesquisaCurso.BeginDateSearch == default(DateTime) && pesquisaCurso.EndDateSearch != default(DateTime) ) ||
+                    ( pesquisaCurso.BeginDateSearch != default(DateTime) && pesquisaCurso.EndDateSearch == default(DateTime) )
+                )
+            {
+                ModelState.AddModelError("BeginDateSearch", "Both start and end dates must be specified.");
+                ModelState.AddModelError("EndDateSearch", "Both start and end dates must be specified.");
+
+                return RedirectToAction("Index", "Home", new { error = "If you specify a date, you need to specify them both" });
+            }
+
+            if (pesquisaCurso.EndDateSearch < pesquisaCurso.BeginDateSearch)
+            {
+                ModelState.AddModelError("BeginDateSearch", "End Date must be set after BeginDate");
+                ModelState.AddModelError("EndDateSearch", "End Date must be set after BeginDate");
+
+                return RedirectToAction("Index", "Home", new { error = "The end date must be later than the start date." });
+            }
+
+
+            IQueryable<Vehicle> searchResults = _context.vehicles.Include("company").Include("reservations"); // .Include("categoria")
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
                 //IQueryable<Vehicle> searchResults = _context.vehicles.Include("company"); // .Include("categoria")

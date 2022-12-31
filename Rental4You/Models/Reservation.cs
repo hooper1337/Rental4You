@@ -16,5 +16,7 @@ namespace Rental4You.Models
         // relacionamento com a endtidade ApplicationUser
         public string ApplicationUserID { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
+
+        
     }
 }
