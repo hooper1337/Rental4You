@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,10 +15,12 @@ namespace Rental4You.Controllers
     public class CompaniesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public CompaniesController(ApplicationDbContext context)
+        public CompaniesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Companies
@@ -68,6 +71,15 @@ namespace Rental4You.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(company);
+        }
+
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> ListCompanyEmployees()
+        {
+            var applicationUserId = _userManager.GetUserId(User);
+            var manager = _context.managers.Where(m => m.applicationUser.Id == applicationUserId).FirstOrDefault();
+            var employees = _context.employees.Include("applicationUser").Include("company").Where(e => e.CompanyId == manager.CompanyId);
+            return View(await employees.ToListAsync());
         }
 
         // GET: Companies/Edit/5
