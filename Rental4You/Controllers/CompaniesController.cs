@@ -16,11 +16,14 @@ namespace Rental4You.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-
-        public CompaniesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly IUserEmailStore<ApplicationUser> _emailStore;
+        private readonly IUserStore<ApplicationUser> _userStore;
+        public CompaniesController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IUserStore<ApplicationUser> userStore)
         {
             _context = context;
             _userManager = userManager;
+            _userStore = userStore;
+            _emailStore = GetEmailStore();
         }
 
         // GET: Companies
@@ -66,9 +69,33 @@ namespace Rental4You.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(company);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var user = CreateUser();
+                var email = "mainmanager"  + company.name.ToLower() + "@gmail.com";
+                await _userStore.SetUserNameAsync(user, email, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, email, CancellationToken.None);
+                user.firstName = "Manager";
+                user.lastName = company.name;
+                user.nif = 0;
+                user.bornDate = DateTime.Today;
+                user.EmailConfirmed = true;
+
+                var result = await _userManager.CreateAsync(user, "Jogodohugo2001!");
+                if(result.Succeeded)
+                {
+                    _context.Add(company);
+                    await _context.SaveChangesAsync();
+                    var manager = new Manager
+                    {
+                        CompanyId = company.Id,
+                        company = company,
+                        applicationUser = user
+                    };
+                    _context.Update(manager);
+                    await _context.SaveChangesAsync();
+                    await _userManager.AddToRoleAsync(user, "Manager");
+                    return RedirectToAction(nameof(Index));
+                }
+               
             }
             return View(company);
         }
@@ -177,6 +204,29 @@ namespace Rental4You.Controllers
         private bool CompanyExists(int id)
         {
           return _context.companies.Any(e => e.Id == id);
+        }
+
+        private IUserEmailStore<ApplicationUser> GetEmailStore()
+        {
+            if (!_userManager.SupportsUserEmail)
+            {
+                throw new NotSupportedException("The default UI requires a user store with email support.");
+            }
+            return (IUserEmailStore<ApplicationUser>)_userStore;
+        }
+
+        private ApplicationUser CreateUser()
+        {
+            try
+            {
+                return Activator.CreateInstance<ApplicationUser>();
+            }
+            catch
+            {
+                throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                    $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+            }
         }
     }
 }
