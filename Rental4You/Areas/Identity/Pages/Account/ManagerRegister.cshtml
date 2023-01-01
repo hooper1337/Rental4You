@@ -29,14 +29,6 @@
                 <span asp-validation-for="Input.lastName" class="text-danger"></span>
             </div>
             <div class="form-floating">
-                <label asp-for="Input.CompanyId" class="control-label"></label>
-                <select asp-for="Input.CompanyId"
-                        asp-items="ViewBag.CompaniesList"
-                        class="form-control">
-                </select>
-                <span asp-validation-for="Input.CompanyId" class="text-danger"></span>
-            </div>
-            <div class="form-floating">
                 <label asp-for="Input.bornDate"></label>
                 <input asp-for="Input.bornDate" class="form-control" autocomplete="born date" aria-required="true" />
                 <span asp-validation-for="Input.bornDate" class="text-danger"></span>

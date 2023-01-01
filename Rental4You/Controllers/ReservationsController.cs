@@ -101,13 +101,20 @@ namespace Rental4You.Controllers
             return View(await reservations.ToListAsync());
         }
 
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> ListCompanyReservations()
         {
             var applicationUserId = _userManager.GetUserId(User);
-            var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
-            var reservations = _context.reservations.Include(v => v.vehicle).Include(a => a.ApplicationUser).Where(r => r.vehicle.CompanyId == employee.CompanyId);
-            return View(await reservations.ToListAsync());
+            if(HttpContext.User.IsInRole("Employer"))
+            {
+                var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+                var reservations = _context.reservations.Include(v => v.vehicle).Include(a => a.ApplicationUser).Where(r => r.vehicle.CompanyId == employee.CompanyId);
+                return View(await reservations.ToListAsync());
+            }
+            var manager = _context.managers.Where(m => m.applicationUser.Id == applicationUserId).FirstOrDefault();
+            var managerResevations = _context.reservations.Include(v => v.vehicle).Include(a => a.ApplicationUser).Where(r => r.vehicle.CompanyId == manager.CompanyId);
+            return View(await managerResevations.ToListAsync());
+            
         }
 
         // GET: Agendamentos/Details/5
@@ -183,7 +190,7 @@ namespace Rental4You.Controllers
             return View(reservation);
         }
 
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> ConfirmReservation(int Id)
         {
             var reservation = _context.reservations.Where(r => r.Id == Id).FirstOrDefault();

@@ -187,17 +187,23 @@ namespace Rental4You.Controllers
             return View(vehicle);
         }
 
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> CompanyVehicles()
         {
             var applicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
-            var vehicles = await _context.vehicles.Include("company").Where(v => v.CompanyId == employee.CompanyId).ToListAsync();
-            return View(vehicles);
+            if(HttpContext.User.IsInRole("Employer"))
+            {
+                var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+                var vehicles = await _context.vehicles.Include("company").Where(v => v.CompanyId == employee.CompanyId).ToListAsync();
+                return View(vehicles);
+            }
+            var manager = _context.managers.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+            var managerVehicles = await _context.vehicles.Include("company").Where(v => v.CompanyId == manager.CompanyId).ToListAsync();
+            return View(managerVehicles);
         }
 
         // GET: Vehicles/Create
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public IActionResult Create()
         {
             return View();
@@ -208,7 +214,7 @@ namespace Rental4You.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> Create([Bind("Id,brand,model,type,place,withdraw,deliver,costPerDay,available")] Vehicle vehicle)
         {
             if (ModelState.IsValid)
@@ -224,7 +230,7 @@ namespace Rental4You.Controllers
         }
 
         // GET: Vehicles/Edit/5
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.vehicles == null)
@@ -245,7 +251,7 @@ namespace Rental4You.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,brand,model,type,place,withdraw,deliver,costPerDay,available")] Vehicle vehicle)
         {
             if (id != vehicle.Id)
@@ -281,7 +287,7 @@ namespace Rental4You.Controllers
         }
 
         // GET: Vehicles/Delete/5
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.vehicles == null)
@@ -303,7 +309,7 @@ namespace Rental4You.Controllers
         // POST: Vehicles/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.vehicles == null)

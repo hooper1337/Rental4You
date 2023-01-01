@@ -82,7 +82,7 @@
                             }
                         </div>
                         <div class="nav-item dropdown">
-                            @if(this.User.IsInRole("Employer"))
+                            @if (this.User.IsInRole("Employer") || this.User.IsInRole("Manager"))
                             {
                                 <a class="nav-item nav-link" asp-area="" asp-controller="Vehicles" asp-action="CompanyVehicles">Vehicles</a>
                             }
@@ -105,7 +105,7 @@
                                     </ul>
                             </li>
                             }
-                            else if(this.User.IsInRole("Employer"))
+                            else if(this.User.IsInRole("Employer") || this.User.IsInRole("Manager"))
                             {
                                 <div class="nav-item dropdown">
                                     <a class="nav-item nav-link" asp-controller="Reservations" asp-action="ListCompanyReservations">Reservations</a>

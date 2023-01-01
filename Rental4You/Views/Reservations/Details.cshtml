@@ -41,7 +41,7 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.vehicle.Id)
         </dd>
-        @if(User.IsInRole("Employer"))
+        @if (User.IsInRole("Employer") || User.IsInRole("Manager"))
         {
             @if (Model.confirmed == false)
             {

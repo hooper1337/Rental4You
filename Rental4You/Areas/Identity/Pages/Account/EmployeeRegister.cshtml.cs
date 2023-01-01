@@ -119,6 +119,7 @@ namespace Rental4You.Areas.Identity.Pages.Account
                     var employee = new Employee
                     {
                         CompanyId =  manager.CompanyId,
+                        company = manager.company,
                         available = true,
                         applicationUser = user,
                     };
