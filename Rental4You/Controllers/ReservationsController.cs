@@ -290,10 +290,10 @@ namespace Rental4You.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Agendamentos'  is null.");
             }
-            var agendamento = await _context.reservations.FindAsync(id);
-            if (agendamento != null)
+            var reservation = await _context.reservations.FindAsync(id);
+            if (reservation != null)
             {
-                _context.reservations.Remove(agendamento);
+                _context.reservations.Remove(reservation);
             }
 
             await _context.SaveChangesAsync();

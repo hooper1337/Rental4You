@@ -269,6 +269,18 @@ namespace Rental4You.Controllers
                     vehicle.CompanyId = employee.CompanyId;
                     _context.Update(vehicle);
                     await _context.SaveChangesAsync();
+                    if (vehicle.available == false)
+                    {
+                        var reservations = _context.reservations.Where(r => r.vehicleId == vehicle.Id && r.BeginDate > DateTime.Now).ToList();
+                        if(reservations != null)
+                        {
+                            foreach(var reservation in reservations)
+                            {
+                                _context.reservations.Remove(reservation);
+                            }
+                            await _context.SaveChangesAsync();
+                        }
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
