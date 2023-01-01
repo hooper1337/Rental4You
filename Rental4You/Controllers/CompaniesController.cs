@@ -192,7 +192,8 @@ namespace Rental4You.Controllers
                 return Problem("Entity set 'ApplicationDbContext.companies'  is null.");
             }
             var company = await _context.companies.FindAsync(id);
-            if (company != null)
+            var companyVehicles = _context.vehicles.Where(v => v.CompanyId == company.Id).FirstOrDefault();
+            if (company != null && companyVehicles == null)
             {
                 _context.companies.Remove(company);
             }
