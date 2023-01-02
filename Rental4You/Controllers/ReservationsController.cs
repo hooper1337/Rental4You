@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +30,7 @@ namespace Rental4You.Controllers
         [Authorize(Roles = "Client")]
         public IActionResult Request()
         {
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand");
+            ViewData["CarList"] = new SelectList(_context.vehicles.Where(v => v.available == true).ToList(), "Id", "brand");
             return View();
         }
 
@@ -140,7 +141,7 @@ namespace Rental4You.Controllers
         [Authorize(Roles = "Client")]
         public IActionResult Create()
         {
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand");
+            ViewData["CarList"] = new SelectList(_context.vehicles.Where(v => v.available == true).ToList(), "Id", "brand");
             return View();
         }
 
@@ -160,7 +161,6 @@ namespace Rental4You.Controllers
 
             reserv.ApplicationUserID = _userManager.GetUserId(User);
             reserv.DateTimeOfRequest = DateTime.Now;
-
             if (ModelState.IsValid)
             {
                 _context.Add(reserv);
@@ -168,7 +168,7 @@ namespace Rental4You.Controllers
                 return RedirectToAction(nameof(Index));
             }
             //ViewData["TipoDeAulaId"] = new SelectList(_context.vehicles, "Id", "Id", reserv.vehicleId); // _context.TipoDeAula?
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
+            ViewData["CarList"] = new SelectList(_context.vehicles.Where(v => v.available == true).ToList(), "Id", "brand", reserv.vehicleId);
             return View(reserv);
         }
 

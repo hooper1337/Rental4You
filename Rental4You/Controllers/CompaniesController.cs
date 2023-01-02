@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Rental4You.Data;
 using Rental4You.Models;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Rental4You.Controllers
 {
@@ -125,6 +126,62 @@ namespace Rental4You.Controllers
             }
             return View(company);
         }
+
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> makeEmployeeAvailableUnavailable(int? id)
+        {
+            if (id == null || _context.employees == null)
+            {
+                return NotFound();
+            }
+
+            var employee = await _context.employees.Include("applicationUser").Where(e => e.Id == id).FirstOrDefaultAsync();
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            if (employee.available == true) {
+            
+                employee.available = false;
+                var userTask = _userManager.FindByEmailAsync(employee.applicationUser.Email);
+                userTask.Wait();
+                var user = userTask.Result;
+                var lockUserTask = _userManager.SetLockoutEnabledAsync(user, true);
+                lockUserTask.Wait();
+                var lockDateTask = _userManager.SetLockoutEndDateAsync(user, DateTime.MaxValue);
+                lockDateTask.Wait();
+            }
+            else 
+            {
+                employee.available = true;
+                var userTask = _userManager.FindByEmailAsync(employee.applicationUser.Email);
+                userTask.Wait();
+                var user = userTask.Result;
+                var lockDisabledTask = _userManager.SetLockoutEnabledAsync(user, false);
+                lockDisabledTask.Wait();
+                var setLockoutEndDateTask = _userManager.SetLockoutEndDateAsync(user, DateTime.Now - TimeSpan.FromMinutes(1));
+                setLockoutEndDateTask.Wait();
+            }
+            try
+            {
+                _context.Update(employee);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CompanyExists(employee.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(ListCompanyEmployees));
+        }
+
+
 
         // POST: Companies/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.

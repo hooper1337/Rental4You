@@ -18,6 +18,12 @@
             <th>
                 Company
             </th>
+            <th>
+                Available
+            </th>
+            <th>
+                Options
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -33,7 +39,22 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.company.name)
                 </td>
-            </tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.available)
+                </td>
+                    @if(item.available)
+                    {
+                        <td>
+                            <a asp-action="makeEmployeeAvailableUnavailable"  asp-route-id="@item.Id" class="btn btn-danger">Make unavailable</a>
+                        </td>
+                    }                
+                    else
+                    {
+                        <td>
+                        <a asp-action="makeEmployeeAvailableUnavailable" asp-route-id="@item.Id" class="btn btn-success">Make available</a>
+                        </td>
+                    }
+             </tr>
         }
     </tbody>
 </table>
