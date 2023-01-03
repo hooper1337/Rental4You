@@ -23,5 +23,30 @@ namespace Rental4You.Models
         [Display(Name = "Confirmed")]
         public bool confirmed { get; set; }
         public ApplicationUser ApplicationUser { get; set; }
+
+
+        [Display(Name = "Number Of Km Of Vehicle on Delivery to Client")]
+        public int? NumberOfKmOfVehicleDelivery { get; set; }
+        [Display(Name = "Damage on Vehicle On Delivery")]
+        public string? DamageDelivery { get; set; }
+        [Display(Name = "Observations On Delivery")]
+        public string? ObservationsDelivery { get; set; }
+        [Display(Name = "The Employer that delivered")]
+        public string? EmployerDelivery { get; set; }
+        [Display(Name = "Delivery Date")]
+        public DateTime? DeliveryDate { get; set; }
+
+        [Display(Name = "Number Of Km Of Vehicle on Retrieval from client")]
+        public int? NumberOfKmOfVehicleRetrieval { get; set; }
+        [Display(Name = "Damage on Vehicle On Retrieval")]
+        public string? DamageRetrieval { get; set; }
+        [Display(Name = "Observations On Retrieval")]
+        public string? ObservationsRetrieval { get; set; }
+        [Display(Name = "The Employer that retrieved the vehicle")]
+        public string? EmployerRetrieval { get; set; }
+        [Display(Name = "Retrieval Date")]
+        public DateTime? RetrievalDate { get; set; }
+
+
     }
 }

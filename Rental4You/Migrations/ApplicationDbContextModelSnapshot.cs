@@ -322,14 +322,44 @@ namespace Rental4You.Migrations
                     b.Property<DateTime>("BeginDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("DamageDelivery")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DamageRetrieval")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("DateTimeOfRequest")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeliveryDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("EmployerDelivery")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployerRetrieval")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("NumberOfKmOfVehicleDelivery")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("NumberOfKmOfVehicleRetrieval")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ObservationsDelivery")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ObservationsRetrieval")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime?>("RetrievalDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("confirmed")
                         .HasColumnType("bit");
