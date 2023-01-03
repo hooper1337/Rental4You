@@ -24,6 +24,11 @@
                 <span asp-validation-for="classification" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <label asp-for="available" class="control-label"></label>
+                <input asp-for="available" class="form-control" />
+                <span asp-validation-for="available" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>

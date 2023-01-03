@@ -259,23 +259,26 @@ namespace Rental4You.Controllers
                     await _context.SaveChangesAsync();
                     if (company.available == false)
                     {
-                        if (company.employers != null)
+                        var managers = await _context.managers.Where(e => e.CompanyId == company.Id).ToListAsync();
+                        var employers = await _context.employees.Where(e => e.CompanyId == company.Id).ToListAsync();
+                        var vehicles = await _context.vehicles.Where(e => e.CompanyId == company.Id).ToListAsync();
+                        if (employers != null)
                         {
-                            foreach (var item in company.employers)
+                            foreach (var item in employers)
                             {
                                 await makeEmployeeAvailableUnavailable(item.Id);
                             }
                         }
-                        if (company.managers != null)
+                        if (managers != null)
                         {
-                            foreach (var item in company.managers)
+                            foreach (var item in managers)
                             {
                                 await makeManagerAvailableUnavailable(item.Id);
                             }
                         }
-                        if (company.vehicles != null)
+                        if (vehicles != null)
                         {
-                            foreach (var item in company.vehicles)
+                            foreach (var item in vehicles)
                             {
                                 item.available = false;
                                 _context.Update(item);
@@ -330,35 +333,31 @@ namespace Rental4You.Controllers
                 return Problem("Entity set 'ApplicationDbContext.companies'  is null.");
             }
             var company = await _context.companies.FindAsync(id);
-            var companyVehicles = _context.vehicles.Where(v => v.CompanyId == company.Id).FirstOrDefault();
-            if (company == null)
-                return NotFound();
+            var managers = await _context.managers.Include("applicationUser").Where(e => e.CompanyId == company.Id).ToListAsync();
+            var employers = await _context.employees.Include("applicationUser").Where(e => e.CompanyId == company.Id).ToListAsync();
+            var vehicles = await _context.vehicles.Where(e => e.CompanyId == company.Id).ToListAsync();
 
-            if (company.managers != null)
+            if (company != null && vehicles.Count == 0)
             {
-                foreach (var manager in company.managers)
+                if (managers != null)
                 {
-                    _context.managers.Remove(manager);
-                    await DeleteUser(manager.applicationUser.Id);
+                    foreach (var manager in managers)
+                    {
+                        _context.managers.Remove(manager);
+                        await DeleteUser(manager.applicationUser.Id);
+                    }
                 }
-            }
-
-            if (company.employers != null)
-            {
-                foreach(var employee in company.employers)
+                if (employers != null)
                 {
-                    _context.employees.Remove(employee);
-                    await DeleteUser(employee.applicationUser.Id);
+                    foreach (var employee in employers)
+                    {
+                        _context.employees.Remove(employee);
+                        await DeleteUser(employee.applicationUser.Id);
+                    }
                 }
-            }
-
-            if (company != null && companyVehicles == null)
-            {
                 _context.companies.Remove(company);
+                await _context.SaveChangesAsync();
             }
-            
-            
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

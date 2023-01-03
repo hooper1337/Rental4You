@@ -217,11 +217,23 @@ namespace Rental4You.Controllers
         [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> Create([Bind("Id,brand,model,type,place,withdraw,deliver,costPerDay,available")] Vehicle vehicle)
         {
+            var company = new Company();
+            
             if (ModelState.IsValid)
             {
                 var applicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
-                vehicle.CompanyId = employee.CompanyId;
+                if (User.IsInRole("Employer"))
+                {
+                    var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+                    vehicle.CompanyId = employee.CompanyId;
+                    company = _context.companies.Include("vehicles").Where(c => c.Id == employee.CompanyId).FirstOrDefault();
+                }
+                else
+                {
+                    var manager = _context.managers.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+                    vehicle.CompanyId = manager.CompanyId;
+                    company = _context.companies.Include("vehicles").Where(c => c.Id == manager.CompanyId).FirstOrDefault();
+                }
                 _context.Add(vehicle);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(CompanyVehicles));
