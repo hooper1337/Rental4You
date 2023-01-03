@@ -66,7 +66,7 @@ namespace Rental4You.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,name,classification")] Company company)
+        public async Task<IActionResult> Create([Bind("Id,name,classification,available")] Company company)
         {
             if (ModelState.IsValid)
             {
@@ -127,7 +127,7 @@ namespace Rental4You.Controllers
             return View(company);
         }
 
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Manager,Admin")]
         public async Task<IActionResult> makeEmployeeAvailableUnavailable(int? id)
         {
             if (id == null || _context.employees == null)
@@ -181,6 +181,61 @@ namespace Rental4You.Controllers
             return RedirectToAction(nameof(ListCompanyEmployees));
         }
 
+        [Authorize(Roles = "Manager,Admin")]
+        public async Task<IActionResult> makeManagerAvailableUnavailable(int? id)
+        {
+            if (id == null || _context.employees == null)
+            {
+                return NotFound();
+            }
+
+            var manager = await _context.managers.Include("applicationUser").Where(e => e.Id == id).FirstOrDefaultAsync();
+            if (manager == null)
+            {
+                return NotFound();
+            }
+            if (manager.available == true)
+            {
+
+                manager.available = false;
+                var userTask = _userManager.FindByEmailAsync(manager.applicationUser.Email);
+                userTask.Wait();
+                var user = userTask.Result;
+                var lockUserTask = _userManager.SetLockoutEnabledAsync(user, true);
+                lockUserTask.Wait();
+                var lockDateTask = _userManager.SetLockoutEndDateAsync(user, DateTime.MaxValue);
+                lockDateTask.Wait();
+            }
+            else
+            {
+                manager.available = true;
+                var userTask = _userManager.FindByEmailAsync(manager.applicationUser.Email);
+                userTask.Wait();
+                var user = userTask.Result;
+                var lockDisabledTask = _userManager.SetLockoutEnabledAsync(user, false);
+                lockDisabledTask.Wait();
+                var setLockoutEndDateTask = _userManager.SetLockoutEndDateAsync(user, DateTime.Now - TimeSpan.FromMinutes(1));
+                setLockoutEndDateTask.Wait();
+            }
+            try
+            {
+                _context.Update(manager);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CompanyExists(manager.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            return RedirectToAction(nameof(ListCompanyEmployees));
+        }
+
 
 
         // POST: Companies/Edit/5
@@ -189,7 +244,7 @@ namespace Rental4You.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,name,classification")] Company company)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,name,classification,available")] Company company)
         {
             if (id != company.Id)
             {
@@ -202,6 +257,32 @@ namespace Rental4You.Controllers
                 {
                     _context.Update(company);
                     await _context.SaveChangesAsync();
+                    if (company.available == false)
+                    {
+                        if (company.employers != null)
+                        {
+                            foreach (var item in company.employers)
+                            {
+                                await makeEmployeeAvailableUnavailable(item.Id);
+                            }
+                        }
+                        if (company.managers != null)
+                        {
+                            foreach (var item in company.managers)
+                            {
+                                await makeManagerAvailableUnavailable(item.Id);
+                            }
+                        }
+                        if (company.vehicles != null)
+                        {
+                            foreach (var item in company.vehicles)
+                            {
+                                item.available = false;
+                                _context.Update(item);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -250,10 +331,32 @@ namespace Rental4You.Controllers
             }
             var company = await _context.companies.FindAsync(id);
             var companyVehicles = _context.vehicles.Where(v => v.CompanyId == company.Id).FirstOrDefault();
+            if (company == null)
+                return NotFound();
+
+            if (company.managers != null)
+            {
+                foreach (var manager in company.managers)
+                {
+                    _context.managers.Remove(manager);
+                    await DeleteUser(manager.applicationUser.Id);
+                }
+            }
+
+            if (company.employers != null)
+            {
+                foreach(var employee in company.employers)
+                {
+                    _context.employees.Remove(employee);
+                    await DeleteUser(employee.applicationUser.Id);
+                }
+            }
+
             if (company != null && companyVehicles == null)
             {
                 _context.companies.Remove(company);
             }
+            
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
@@ -271,6 +374,25 @@ namespace Rental4You.Controllers
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
             return (IUserEmailStore<ApplicationUser>)_userStore;
+        }
+
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            var roles = await _userManager.GetRolesAsync(user);
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                if (roles.Count > 0)
+                {
+                    foreach (var role in roles.ToList())
+                    {
+                        var result = await _userManager.RemoveFromRoleAsync(user, role);
+                    }
+                }
+                await _userManager.DeleteAsync(user);
+                transaction.Commit();
+            }
+            return Ok();
         }
 
         private ApplicationUser CreateUser()

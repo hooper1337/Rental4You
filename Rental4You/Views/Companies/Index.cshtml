@@ -23,6 +23,9 @@
             <th>
                 Cars
             </th>
+            <th>
+                Available
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -57,6 +60,9 @@
                             @Html.DisplayFor(modelItem => vehicleDisplay)
                         }
                     }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.available)
                 </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

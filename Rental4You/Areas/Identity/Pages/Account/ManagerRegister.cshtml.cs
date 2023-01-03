@@ -117,6 +117,7 @@ namespace Rental4You.Areas.Identity.Pages.Account
                     {
                         CompanyId = currManager.CompanyId,
                         company = currManager.company,
+                        available = true,
                         applicationUser = user
                     };
 

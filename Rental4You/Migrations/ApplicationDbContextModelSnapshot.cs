@@ -246,6 +246,9 @@ namespace Rental4You.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<bool>("available")
+                        .HasColumnType("bit");
+
                     b.Property<int>("classification")
                         .HasColumnType("int");
 
@@ -297,6 +300,9 @@ namespace Rental4You.Migrations
 
                     b.Property<string>("applicationUserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("available")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

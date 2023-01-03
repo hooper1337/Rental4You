@@ -10,6 +10,10 @@ namespace Rental4You.Models
         public string name { get; set; }
         [Display(Name = "Classification", Prompt = "Insert company classification...")]
         public int classification { get; set; } // from 0 to 10
+
+        [Display(Name = "Available", Prompt = "Insert company classification...")]
+        public bool available { get; set; }
+
         [Display(Name = "Car List")]
         public ICollection<Vehicle>? vehicles { get; set; }
         public ICollection<Employee>? employers { get; set; }
