@@ -39,7 +39,7 @@ namespace Rental4You.Controllers
         public IActionResult Calculate([Bind("BeginDate,EndDate,vehicleId")] ReservationsViewModel request)
         {
             // ViewData["Vehicle"]
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand");
+            ViewData["CarList"] = new SelectList(_context.vehicles.Where(v => v.available == true).ToList(), "Id", "brand");
 
             double NrDays = 0;
 

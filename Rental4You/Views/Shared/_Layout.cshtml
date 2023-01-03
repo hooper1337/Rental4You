@@ -91,6 +91,12 @@
                                 <a class="nav-item nav-link" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
                             } 
                         </div>
+                        <div class="nav-item dropdown">
+                            @if (this.User.IsInRole("Admin"))
+                            {
+                                <a class="nav-item nav-link" asp-area="" asp-controller="Categories" asp-action="Index">Categories</a>
+                            }
+                        </div>
                         <div>
                             <!-- https://getbootstrap.com/docs/5.0/components/navbar/ -->
                             @if (this.User.IsInRole("Client"))
