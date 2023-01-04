@@ -30,11 +30,7 @@ namespace Rental4You.Controllers
                                       select mygroup.FirstOrDefault();
             ViewData["LocationList"] = new SelectList(uniqueVehiclesPlace.ToList(), "Id", "place");
 
-            var uniqueVehiclesTypes = from p in _context.vehicles
-                                      group p by new { p.type }
-                               into mygroup
-                                      select mygroup.FirstOrDefault();
-            ViewData["TypeList"] = new SelectList(uniqueVehiclesTypes.ToList(), "Id", "type");
+            ViewData["CategoryList"] = new SelectList(_context.categories.ToList(), "Id", "name");
             // ViewData["withdrawDateList"] = new SelectList(_context.vehicles.ToList(), "Id", "withdrawDate"); // need to change to withdrawDate
 
             return View();

@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Xml.Linq;
 
 namespace Rental4You.Models
 {
@@ -10,9 +9,10 @@ namespace Rental4You.Models
         public string brand { set; get; }
         [Display(Name = "Model", Prompt = "Insert vehicle model...")]
         public string model { set; get; }
-        [Display(Name = "Type", Prompt = "Insert vehicle type...")]
-        public string type { set; get; }
-        [Display(Name = "Place", Prompt = "Insert vehicle place...")]
+        [Display(Name = "Type", Prompt = "Choose category for the vehicle...")]
+        public int CategoryId { get; set; }
+        public Category? category { set; get; }
+        [Display(Name = "Place", Prompt = "Insert place for the vehicle...")]
         public string place { set; get; }
         [Display(Name = "Cost/Day", Prompt = "Choose the vehicle cost per day...")]
         public int costPerDay { set; get; }

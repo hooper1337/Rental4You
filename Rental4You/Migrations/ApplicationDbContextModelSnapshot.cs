@@ -211,6 +211,9 @@ namespace Rental4You.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<bool>("available")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("bornDate")
                         .HasColumnType("datetime2");
 
@@ -236,6 +239,27 @@ namespace Rental4You.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Rental4You.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("categories");
                 });
 
             modelBuilder.Entity("Rental4You.Models.Company", b =>
@@ -390,6 +414,9 @@ namespace Rental4You.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
@@ -411,11 +438,9 @@ namespace Rental4You.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("CompanyId");
 
@@ -528,11 +553,24 @@ namespace Rental4You.Migrations
 
             modelBuilder.Entity("Rental4You.Models.Vehicle", b =>
                 {
+                    b.HasOne("Rental4You.Models.Category", "category")
+                        .WithMany("vehicles")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Rental4You.Models.Company", "company")
                         .WithMany("vehicles")
                         .HasForeignKey("CompanyId");
 
+                    b.Navigation("category");
+
                     b.Navigation("company");
+                });
+
+            modelBuilder.Entity("Rental4You.Models.Category", b =>
+                {
+                    b.Navigation("vehicles");
                 });
 
             modelBuilder.Entity("Rental4You.Models.Company", b =>

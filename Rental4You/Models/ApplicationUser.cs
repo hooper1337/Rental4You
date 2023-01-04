@@ -13,5 +13,7 @@ namespace Rental4You.Models
         public DateTime bornDate { set; get; }
         [Display(Name = "NIF", Prompt = "Insert nif...")]
         public int nif { set; get; }
+        [Display(Name = "Available")]
+        public Boolean available { get; set; }
     }
 }
