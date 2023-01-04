@@ -211,6 +211,9 @@ namespace Rental4You.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<bool>("available")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("bornDate")
                         .HasColumnType("datetime2");
 
@@ -414,7 +417,7 @@ namespace Rental4You.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int>("CompanyId")
+                    b.Property<int?>("CompanyId")
                         .HasColumnType("int");
 
                     b.Property<bool>("available")
@@ -558,9 +561,7 @@ namespace Rental4You.Migrations
 
                     b.HasOne("Rental4You.Models.Company", "company")
                         .WithMany("vehicles")
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CompanyId");
 
                     b.Navigation("category");
 

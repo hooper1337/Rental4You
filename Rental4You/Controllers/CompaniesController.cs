@@ -250,7 +250,9 @@ namespace Rental4You.Controllers
             {
                 return NotFound();
             }
-
+            var managers = await _context.managers.Where(e => e.CompanyId == company.Id).ToListAsync();
+            var employers = await _context.employees.Where(e => e.CompanyId == company.Id).ToListAsync();
+            var vehicles = await _context.vehicles.Where(e => e.CompanyId == company.Id).ToListAsync();
             if (ModelState.IsValid)
             {
                 try
@@ -259,9 +261,7 @@ namespace Rental4You.Controllers
                     await _context.SaveChangesAsync();
                     if (company.available == false)
                     {
-                        var managers = await _context.managers.Where(e => e.CompanyId == company.Id).ToListAsync();
-                        var employers = await _context.employees.Where(e => e.CompanyId == company.Id).ToListAsync();
-                        var vehicles = await _context.vehicles.Where(e => e.CompanyId == company.Id).ToListAsync();
+
                         if (employers != null)
                         {
                             foreach (var item in employers)
@@ -281,6 +281,32 @@ namespace Rental4You.Controllers
                             foreach (var item in vehicles)
                             {
                                 item.available = false;
+                                _context.Update(item);
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (employers != null)
+                        {
+                            foreach (var item in employers)
+                            {
+                                await makeEmployeeAvailableUnavailable(item.Id);
+                            }
+                        }
+                        if (managers != null)
+                        {
+                            foreach (var item in managers)
+                            {
+                                await makeManagerAvailableUnavailable(item.Id);
+                            }
+                        }
+                        if (vehicles != null)
+                        {
+                            foreach (var item in vehicles)
+                            {
+                                item.available = true;
                                 _context.Update(item);
                                 await _context.SaveChangesAsync();
                             }

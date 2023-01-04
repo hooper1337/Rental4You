@@ -78,6 +78,12 @@
                         <div class="nav-item dropdown">
                             @if (this.User.IsInRole("Admin"))
                             {
+                                <a class="nav-item nav-link" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                            }
+                        </div>
+                        <div class="nav-item dropdown">
+                            @if (this.User.IsInRole("Admin"))
+                            {
                                 <a class="nav-item nav-link" asp-area="" asp-controller="Companies" asp-action="Index">Companies</a>
                             }
                         </div>
