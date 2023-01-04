@@ -89,7 +89,8 @@ namespace Rental4You.Controllers
                     {
                         CompanyId = company.Id,
                         company = company,
-                        applicationUser = user
+                        applicationUser = user,
+                        available = true
                     };
                     _context.Update(manager);
                     await _context.SaveChangesAsync();
@@ -184,7 +185,7 @@ namespace Rental4You.Controllers
         [Authorize(Roles = "Manager,Admin")]
         public async Task<IActionResult> makeManagerAvailableUnavailable(int? id)
         {
-            if (id == null || _context.employees == null)
+            if (id == null || _context.managers == null)
             {
                 return NotFound();
             }
