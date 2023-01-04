@@ -111,22 +111,6 @@ namespace Rental4You.Controllers
         {
             var applicationUserId = _userManager.GetUserId(User);
 
-            var mymy = searchReservations.DeliveryBeginDateSearch;
-            var mymy2 = searchReservations.DeliveryEndDateSearch;
-            var mymy3 = searchReservations.RetrievalBeginDateSearch;
-            var mymy4 = searchReservations.RetrievalEndDateSearch;
-            var mym5 = searchReservations.CategoryId;
-            var mymy6 = searchReservations.ApplicationUserID;
-
-            var uniqueVehicleCategories = (from v in _context.vehicles
-                                           select v.category).Distinct();
-            ViewData["VehicleCategories"] = new SelectList(uniqueVehicleCategories.ToList(), "Id", "name");
-
-            var uniqueClients = (from r in _context.reservations
-                                select r.ApplicationUser).Distinct();
-            ViewData["Client"] = new SelectList(uniqueClients.ToList(), "Id", "firstName");
-
-
             List<Reservation> reservations;
             if (HttpContext.User.IsInRole("Employer"))
             {
@@ -143,6 +127,99 @@ namespace Rental4You.Controllers
             {
                 ReservationsList = reservations
             };
+            // -------------- Check for erros in the dates --------------
+            if (((searchReservations.DeliveryBeginDateSearch == null || searchReservations.DeliveryBeginDateSearch == default(DateTime)) && (searchReservations.DeliveryEndDateSearch != null && searchReservations.DeliveryEndDateSearch != default(DateTime))) ||
+            ((searchReservations.DeliveryBeginDateSearch != null && searchReservations.DeliveryBeginDateSearch != default(DateTime)) && (searchReservations.DeliveryEndDateSearch == null || searchReservations.DeliveryEndDateSearch == default(DateTime))))
+            {
+
+                ViewData["ErrorMessage"] = "If you specify a date, you need to specify them both";
+                return View(model);
+            }
+            if (searchReservations.DeliveryEndDateSearch < searchReservations.DeliveryBeginDateSearch)
+            {
+
+                ViewData["ErrorMessage"] = "The end date must be after the start date.";
+                return View(model);
+            }
+            if (((searchReservations.RetrievalBeginDateSearch == null || searchReservations.RetrievalBeginDateSearch == default(DateTime)) && (searchReservations.RetrievalEndDateSearch != null && searchReservations.RetrievalEndDateSearch != default(DateTime))) ||
+            ((searchReservations.RetrievalBeginDateSearch != null && searchReservations.RetrievalBeginDateSearch != default(DateTime)) && (searchReservations.RetrievalEndDateSearch == null || searchReservations.RetrievalEndDateSearch == default(DateTime))))
+            {
+                ViewData["ErrorMessage"] = "If you specify a date, you need to specify them both";
+                return View(model);
+            }
+            if (searchReservations.RetrievalEndDateSearch < searchReservations.RetrievalBeginDateSearch)
+            {
+
+                ViewData["ErrorMessage"] = "The end date must be after the start date.";
+                return View(model);
+            }
+            // -------------- Check for erros in the dates --------------
+
+
+            if (!(searchReservations.CategoryId == 0 || searchReservations.CategoryId == null))
+            {
+                reservations = reservations.Where(r => r.vehicle.CategoryId == searchReservations.CategoryId).ToList();
+            }
+            if (!string.IsNullOrEmpty(searchReservations.ApplicationUserID))
+            {
+                reservations = reservations.Where(r => r.ApplicationUser.Id == searchReservations.ApplicationUserID).ToList();
+            }
+
+
+            // Check the dates
+            //IQueryable<Reservation> filteredSearchResults = searchReservations;
+            List<Reservation> reservationsToRemove = new List<Reservation>();
+
+            foreach (Reservation reservation in reservations)
+            {
+                bool available = true;
+                // Check if the time frame of this reservation overlaps with the time frame we're searching for
+                if (searchReservations.DeliveryBeginDateSearch != null && searchReservations.DeliveryBeginDateSearch != default(DateTime) && searchReservations.DeliveryEndDateSearch != null && searchReservations.DeliveryEndDateSearch != default(DateTime))
+                {
+                    if (!(reservation.BeginDate >= searchReservations.DeliveryBeginDateSearch && reservation.BeginDate <= searchReservations.DeliveryEndDateSearch))
+                    {
+                        // reservation.BeginDate is between DeliveryBeginDateSearch and DeliveryEndDateSearch
+                        available = false;
+                    }
+                }
+
+                if (searchReservations.RetrievalBeginDateSearch != null && searchReservations.RetrievalBeginDateSearch != default(DateTime) && searchReservations.RetrievalEndDateSearch != null && searchReservations.RetrievalEndDateSearch != default(DateTime))
+                {
+                    if (!(reservation.EndDate >= searchReservations.RetrievalBeginDateSearch && reservation.EndDate <= searchReservations.RetrievalEndDateSearch))
+                    {
+                        // reservation.BeginDate is between DeliveryBeginDateSearch and DeliveryEndDateSearch
+                        available = false;
+                    }
+                }
+
+                if (!available)
+                {
+                    // Add reservation to the list of reservations to remove
+                    reservationsToRemove.Add(reservation);
+                }
+
+            }
+            // Remove reservations from the original list
+            foreach (Reservation reservation in reservationsToRemove)
+            {
+                reservations.Remove(reservation);
+            }
+
+
+
+            var modelFiltered = new ReservationsViewModel
+            {
+                ReservationsList = reservations
+            };
+
+
+            var uniqueVehicleCategories = (from v in _context.vehicles
+                                           select v.category).Distinct();
+            ViewData["VehicleCategories"] = new SelectList(uniqueVehicleCategories.ToList(), "Id", "name");
+
+            var uniqueClients = (from r in _context.reservations
+                                select r.ApplicationUser).Distinct();
+            ViewData["Client"] = new SelectList(uniqueClients.ToList(), "Id", "firstName");
 
             return View(model);
         }
