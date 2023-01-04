@@ -102,11 +102,24 @@ namespace Rental4You.Controllers
             return View(await reservations.ToListAsync());
         }
 
+        // GET
         [Authorize(Roles = "Employer, Manager")]
-        public async Task<IActionResult> ListCompanyReservations()
+        public async Task<IActionResult> ListCompanyReservations(string? error)
         {
             var applicationUserId = _userManager.GetUserId(User);
-            if(HttpContext.User.IsInRole("Employer"))
+
+            ViewData["ErrorMessage"] = error;
+
+            var uniqueVehiclesPlace = from p in _context.vehicles
+                                      group p by new { p.place } //or group by new {p.Id, p.Whatever}
+                                      into mygroup
+                                      select mygroup.FirstOrDefault();
+            ViewData["VehicleCategories"] = new SelectList(uniqueVehiclesPlace.ToList(), "Id", "place");
+
+            ViewData["Client"] = new SelectList(_context.categories.ToList(), "Id", "name");
+            // ViewData["withdrawDateList"] = new SelectList(_context.vehicles.ToList(), "Id", "withdrawDate"); // need to change to withdrawDate
+
+            if (HttpContext.User.IsInRole("Employer"))
             {
                 var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
                 var reservations = _context.reservations.Include(v => v.vehicle).Include(a => a.ApplicationUser).Where(r => r.vehicle.CompanyId == employee.CompanyId);
@@ -118,8 +131,17 @@ namespace Rental4You.Controllers
             
         }
 
-        // GET: Agendamentos/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // POST
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ListCompanyReservations()
+        {
+            return View();
+
+        }
+
+            // GET: Agendamentos/Details/5
+            public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.reservations == null)
             {
