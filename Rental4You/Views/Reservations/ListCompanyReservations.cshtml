@@ -13,15 +13,15 @@
 {
     <div class="container-fluid bg-white pt-3 px-lg-5">
         <div class="row mx-n2">
-            <!--
+            
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-                <select asp-for="vehicle"
+                <select asp-for="Category"
                     asp-items="ViewBag.VehicleCategories"
                     class="form-control">
                     <option value="" selected>Category</option>
                 </select>
             </div>
-
+            <!--
             
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
                 <select asp-for="client"
@@ -31,6 +31,13 @@
                 </select>
             </div>
             -->
+            <div class="col-xl-2 col-lg-4 col-md-6 px-2">
+                <select asp-for="client"
+                    asp-items="ViewBag.Client"
+                    class="form-control">
+                    <option value="" selected>Client</option>
+                </select>
+            </div>
 
             <div class="col-lg-4 col-md-6 px-2">
                 <div class="input-append date form_datetime">

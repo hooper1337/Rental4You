@@ -108,6 +108,16 @@ namespace Rental4You.Controllers
         {
             var applicationUserId = _userManager.GetUserId(User);
 
+
+            var uniqueVehicleCategories = (from v in _context.vehicles
+                                           select v.category).Distinct();
+            ViewData["VehicleCategories"] = new SelectList(uniqueVehicleCategories.ToList(), "Id", "name");
+
+            var uniqueClients = from r in _context.reservations
+                                select r.ApplicationUser;
+            ViewData["Client"] = new SelectList(uniqueClients.ToList(), "Id", "firstName");
+
+
             List<Reservation> reservations;
             if (HttpContext.User.IsInRole("Employer"))
             {
