@@ -341,7 +341,7 @@ namespace Rental4You.Controllers
                     }
 
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction(nameof(ListCompanyReservations));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -353,8 +353,8 @@ namespace Rental4You.Controllers
                     {
                         throw;
                     }
-                }
-            //}
+                //}
+            }
             ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
             return View(reserv);
         }
