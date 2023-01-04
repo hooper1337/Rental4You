@@ -108,6 +108,28 @@ namespace Rental4You.Controllers
         {
             var applicationUserId = _userManager.GetUserId(User);
 
+            List<Reservation> reservations;
+            if (HttpContext.User.IsInRole("Employer"))
+            {
+                var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
+                reservations = _context.reservations.Include(v => v.vehicle).Include(a => a.ApplicationUser).Where(r => r.vehicle.CompanyId == employee.CompanyId).ToList();
+            }
+            else
+            {
+                var manager = _context.managers.Where(m => m.applicationUser.Id == applicationUserId).FirstOrDefault();
+                reservations = _context.reservations.Include(v => v.vehicle).Include(a => a.ApplicationUser).Where(r => r.vehicle.CompanyId == manager.CompanyId).ToList();
+            }
+
+            var model = new ReservationsViewModel
+            {
+                ReservationsList = reservations
+            };
+
+            return View(model);
+        }
+
+
+        /*
             ViewData["ErrorMessage"] = error;
 
             var uniqueVehiclesPlace = from p in _context.vehicles
@@ -118,30 +140,20 @@ namespace Rental4You.Controllers
 
             ViewData["Client"] = new SelectList(_context.categories.ToList(), "Id", "name");
             // ViewData["withdrawDateList"] = new SelectList(_context.vehicles.ToList(), "Id", "withdrawDate"); // need to change to withdrawDate
-
-            if (HttpContext.User.IsInRole("Employer"))
-            {
-                var employee = _context.employees.Where(e => e.applicationUser.Id == applicationUserId).FirstOrDefault();
-                var reservations = _context.reservations.Include(v => v.vehicle).Include(a => a.ApplicationUser).Where(r => r.vehicle.CompanyId == employee.CompanyId);
-                return View(await reservations.ToListAsync());
-            }
-            var manager = _context.managers.Where(m => m.applicationUser.Id == applicationUserId).FirstOrDefault();
-            var managerResevations = _context.reservations.Include(v => v.vehicle).Include(a => a.ApplicationUser).Where(r => r.vehicle.CompanyId == manager.CompanyId);
-            return View(await managerResevations.ToListAsync());
-            
-        }
+         */
 
         // POST
+        /*
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ListCompanyReservations()
         {
             return View();
 
-        }
+        }*/
 
-            // GET: Agendamentos/Details/5
-            public async Task<IActionResult> Details(int? id)
+        // GET: Agendamentos/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.reservations == null)
             {

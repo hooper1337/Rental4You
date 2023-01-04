@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Rental4You.Models.Reservation>
+﻿@model Rental4You.ViewModels.ReservationsViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -94,7 +94,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.ReservationsList)
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.ApplicationUser.UserName)</td>

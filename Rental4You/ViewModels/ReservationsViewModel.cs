@@ -7,6 +7,8 @@ namespace Rental4You.ViewModels
 {
     public class ReservationsViewModel
     {
+        public List<Reservation>? ReservationsList { get; set; }
+
         [Display(Name = "Begin Date", Prompt = "yyyy-mm-dd")]
         public DateTime BeginDate { get; set; }
         [Display(Name = "End date", Prompt = "yyyy-mm-dd")]
@@ -14,5 +16,7 @@ namespace Rental4You.ViewModels
 
         [Display(Name = "Vehicle", Prompt = "Choose the vehicle")]
         public int vehicleId { get; set; }
+        [Display(Name = "Category", Prompt = "category of vehicle")]
+        public Category Category { get; set; }
     }
 }
