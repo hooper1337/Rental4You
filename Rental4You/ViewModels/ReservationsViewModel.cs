@@ -17,10 +17,10 @@ namespace Rental4You.ViewModels
         [Display(Name = "Vehicle", Prompt = "Choose the vehicle")]
         public int vehicleId { get; set; }
         [Display(Name = "Category", Prompt = "category of vehicle")]
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
         [Display(Name = "Client")]
-        public string ApplicationUserID { get; set; }
-        public ApplicationUser client { get; set; }
+        public string? ApplicationUserID { get; set; }
+        public ApplicationUser? client { get; set; }
     }
 }
