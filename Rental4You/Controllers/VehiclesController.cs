@@ -28,14 +28,14 @@ namespace Rental4You.Controllers
         // ---------- Search ----------
         public async Task<IActionResult> Index(
             string? TextToSearch, 
-            [Bind("TextToSearch,Order,BeginDateSearch,EndDateSearch")] SearchVehicleViewModel pesquisaCurso,
+            [Bind("TextToSearch,Order,BeginDateSearch,EndDateSearch")] SearchVehicleViewModel searchCurso,
             [Bind("Id,brand,model,CompanyId,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle
             )
         {
 
             if ( // if not both are filled
-                    ( pesquisaCurso.BeginDateSearch == default(DateTime) && pesquisaCurso.EndDateSearch != default(DateTime) ) ||
-                    ( pesquisaCurso.BeginDateSearch != default(DateTime) && pesquisaCurso.EndDateSearch == default(DateTime) )
+                    ( searchCurso.BeginDateSearch == default(DateTime) && searchCurso.EndDateSearch != default(DateTime) ) ||
+                    ( searchCurso.BeginDateSearch != default(DateTime) && searchCurso.EndDateSearch == default(DateTime) )
                 )
             {
                 ModelState.AddModelError("BeginDateSearch", "Both start and end dates must be specified.");
@@ -44,7 +44,7 @@ namespace Rental4You.Controllers
                 return RedirectToAction("Index", "Home", new { error = "If you specify a date, you need to specify them both" });
             }
 
-            if (pesquisaCurso.EndDateSearch < pesquisaCurso.BeginDateSearch)
+            if (searchCurso.EndDateSearch < searchCurso.BeginDateSearch)
             {
                 ModelState.AddModelError("BeginDateSearch", "End Date must be set after BeginDate");
                 ModelState.AddModelError("EndDateSearch", "End Date must be set after BeginDate");
@@ -57,7 +57,7 @@ namespace Rental4You.Controllers
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
                 searchResults = _context.vehicles.Include("company").Include("reservations").Include("category"); // .Include("categoria")
-                pesquisaCurso.VehicleList = await searchResults.ToListAsync();
+                searchCurso.VehicleList = await searchResults.ToListAsync();
             }
             else
             {
@@ -70,7 +70,7 @@ namespace Rental4You.Controllers
                                 c.company.name.Contains(TextToSearch)
                          );
 
-                pesquisaCurso.TextToSearch = TextToSearch;
+                searchCurso.TextToSearch = TextToSearch;
             }
 
             if (vehicle.place != null) {
@@ -97,8 +97,8 @@ namespace Rental4You.Controllers
                 foreach (Reservation reservation in veh.reservations)
                 {
                     // Check if the time frame of this reservation overlaps with the time frame we're searching for
-                    if ((reservation.BeginDate <= pesquisaCurso.EndDateSearch && reservation.EndDate >= pesquisaCurso.BeginDateSearch) ||
-                        (reservation.EndDate >= pesquisaCurso.BeginDateSearch && reservation.BeginDate <= pesquisaCurso.EndDateSearch))
+                    if ((reservation.BeginDate <= searchCurso.EndDateSearch && reservation.EndDate >= searchCurso.BeginDateSearch) ||
+                        (reservation.EndDate >= searchCurso.BeginDateSearch && reservation.BeginDate <= searchCurso.EndDateSearch))
                     {
                         available = false;
                         break;
@@ -114,19 +114,19 @@ namespace Rental4You.Controllers
             searchResults = filteredSearchResults;
 
 
-            pesquisaCurso.VehicleList = await searchResults.ToListAsync();
-            pesquisaCurso.NumResults = pesquisaCurso.VehicleList.Count();
+            searchCurso.VehicleList = await searchResults.ToListAsync();
+            searchCurso.NumResults = searchCurso.VehicleList.Count();
 
-            if (pesquisaCurso.Order == 1)
-                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.costPerDay).ToList();
-            if (pesquisaCurso.Order == 2)
-                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.costPerDay).ToList();
-            if (pesquisaCurso.Order == 3)
-                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderBy(v => v.company.classification).ToList();
-            if (pesquisaCurso.Order == 4)
-                pesquisaCurso.VehicleList = pesquisaCurso.VehicleList.OrderByDescending(v => v.company.classification).ToList();
+            if (searchCurso.Order == 1)
+                searchCurso.VehicleList = searchCurso.VehicleList.OrderBy(v => v.costPerDay).ToList();
+            if (searchCurso.Order == 2)
+                searchCurso.VehicleList = searchCurso.VehicleList.OrderByDescending(v => v.costPerDay).ToList();
+            if (searchCurso.Order == 3)
+                searchCurso.VehicleList = searchCurso.VehicleList.OrderBy(v => v.company.classification).ToList();
+            if (searchCurso.Order == 4)
+                searchCurso.VehicleList = searchCurso.VehicleList.OrderByDescending(v => v.company.classification).ToList();
 
-            return View(pesquisaCurso);
+            return View(searchCurso);
         }
 
         [HttpPost]

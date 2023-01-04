@@ -104,17 +104,26 @@ namespace Rental4You.Controllers
 
         // GET
         [Authorize(Roles = "Employer, Manager")]
-        public async Task<IActionResult> ListCompanyReservations(string? error)
+        public async Task<IActionResult> ListCompanyReservations(
+            string? error, 
+            [Bind("ApplicationUserID,CategoryId,DeliveryBeginDateSearch,DeliveryEndDateSearch,RetrievalBeginDateSearch,RetrievalEndDateSearch")] ReservationsViewModel searchReservations
+            )
         {
             var applicationUserId = _userManager.GetUserId(User);
 
+            var mymy = searchReservations.DeliveryBeginDateSearch;
+            var mymy2 = searchReservations.DeliveryEndDateSearch;
+            var mymy3 = searchReservations.RetrievalBeginDateSearch;
+            var mymy4 = searchReservations.RetrievalEndDateSearch;
+            var mym5 = searchReservations.CategoryId;
+            var mymy6 = searchReservations.ApplicationUserID;
 
             var uniqueVehicleCategories = (from v in _context.vehicles
                                            select v.category).Distinct();
             ViewData["VehicleCategories"] = new SelectList(uniqueVehicleCategories.ToList(), "Id", "name");
 
-            var uniqueClients = from r in _context.reservations
-                                select r.ApplicationUser;
+            var uniqueClients = (from r in _context.reservations
+                                select r.ApplicationUser).Distinct();
             ViewData["Client"] = new SelectList(uniqueClients.ToList(), "Id", "firstName");
 
 

@@ -15,24 +15,14 @@
         <div class="row mx-n2">
             
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-                <select asp-for="Category"
+                <select asp-for="CategoryId"
                     asp-items="ViewBag.VehicleCategories"
                     class="form-control">
                     <option value="" selected>Category</option>
                 </select>
             </div>
-            <!--
-            
             <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-                <select asp-for="client"
-                    asp-items="ViewBag.Client"
-                    class="form-control">
-                    <option value="" selected>Client</option>
-                </select>
-            </div>
-            -->
-            <div class="col-xl-2 col-lg-4 col-md-6 px-2">
-                <select asp-for="client"
+                <select asp-for="ApplicationUserID"
                     asp-items="ViewBag.Client"
                     class="form-control">
                     <option value="" selected>Client</option>
@@ -41,22 +31,22 @@
 
             <div class="col-lg-4 col-md-6 px-2">
                 <div class="input-append date form_datetime">
-                    <label for="DeliveryBeginDate">Delivery Start Date:</label>
+                    <label for="DeliveryBeginDateSearch">Delivery Start Date:</label>
                     <input type="datetime-local" id="DeliveryBeginDateSearch" name="DeliveryBeginDateSearch">
                 </div>
                 <div class="input-append date form_datetime">
-                    <label for="DeliveryEndDate">Delivery End Date:</label>
+                    <label for="DeliveryEndDateSearch">Delivery End Date:</label>
                     <input type="datetime-local" id="DeliveryEndDateSearch" name="DeliveryEndDateSearch">
                 </div>
             </div>
 
             <div class="col-lg-4 col-md-6 px-2">
                 <div class="input-append date form_datetime">
-                    <label for="RetrievalBeginDate">Retrieval Start Date:</label>
+                    <label for="RetrievalBeginDateSearch">Retrieval Start Date:</label>
                     <input type="datetime-local" id="RetrievalBeginDateSearch" name="RetrievalBeginDateSearch">
                 </div>
                 <div class="input-append date form_datetime">
-                    <label for="RetrievalEndDate">Retrieval End Date:</label>
+                    <label for="RetrievalEndDateSearch">Retrieval End Date:</label>
                     <input type="datetime-local" id="RetrievalEndDateSearch" name="RetrievalEndDateSearch">
                 </div>
             </div>
