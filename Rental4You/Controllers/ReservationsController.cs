@@ -172,24 +172,6 @@ namespace Rental4You.Controllers
             return View(reserv);
         }
 
-        // GET: Agendamentos/Edit/5
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.reservations == null)
-            {
-                return NotFound();
-            }
-
-            var reservation = await _context.reservations.FindAsync(id);
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reservation.vehicleId);
-            return View(reservation);
-        }
-
         [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> ConfirmReservation(int Id)
         {
@@ -221,6 +203,23 @@ namespace Rental4You.Controllers
             return View(reservation);
         }
 
+        // GET: Agendamentos/Edit/5
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null || _context.reservations == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = await _context.reservations.FindAsync(id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reservation.vehicleId);
+            return View(reservation);
+        }
 
         // POST: Agendamentos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
@@ -259,6 +258,108 @@ namespace Rental4You.Controllers
             ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
             return View(reserv);
         }
+
+        // GET: Agendamentos/Edit/5
+        [Authorize(Roles = "Employer")]
+        public async Task<IActionResult> VehicleState(int? id)
+        {
+            if (id == null || _context.reservations == null)
+            {
+                return NotFound();
+            }
+
+            var res = await _context.reservations.FindAsync(id);
+            if (res == null)
+            {
+                return NotFound();
+            }
+            return View(res);
+        }
+
+        // POST: Agendamentos/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Employer")]
+        public async Task<IActionResult> VehicleState(int id, [Bind("Id,NumberOfKmOfVehicleDelivery,DamageDelivery,ObservationsDelivery,EmployerDelivery,DeliveryDate,NumberOfKmOfVehicleRetrieval,DamageRetrieval,ObservationsRetrieval,EmployerRetrieval,RetrievalDate")] Reservation reserv)
+        {
+            if (id != reserv.Id)
+            {
+                return NotFound();
+            }
+
+            //if (ModelState.IsValid)
+            //{
+                try
+                {
+                    var reservation = _context.reservations.Find(id);
+                    if (reservation == null)
+                    {
+                        return NotFound();
+                    }
+
+                    if (reserv.NumberOfKmOfVehicleDelivery != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.NumberOfKmOfVehicleDelivery).CurrentValue = reserv.NumberOfKmOfVehicleDelivery;
+                    }
+                    if (reserv.DamageDelivery != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.DamageDelivery).CurrentValue = reserv.DamageDelivery;
+                    }
+                    if (reserv.ObservationsDelivery != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.ObservationsDelivery).CurrentValue = reserv.ObservationsDelivery;
+                    }
+                    if (reserv.EmployerDelivery != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.EmployerDelivery).CurrentValue = reserv.EmployerDelivery;
+                    }
+                    if (reserv.DeliveryDate != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.DeliveryDate).CurrentValue = reserv.DeliveryDate;
+                    }
+                    if (reserv.NumberOfKmOfVehicleRetrieval != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.NumberOfKmOfVehicleRetrieval).CurrentValue = reserv.NumberOfKmOfVehicleRetrieval;
+                    }
+                    if (reserv.DamageRetrieval != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.DamageRetrieval).CurrentValue = reserv.DamageRetrieval;
+                    }
+                    if (reserv.ObservationsRetrieval != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.ObservationsRetrieval).CurrentValue = reserv.ObservationsRetrieval;
+                    }
+                    if (reserv.EmployerRetrieval != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.EmployerRetrieval).CurrentValue = reserv.EmployerRetrieval;
+                    }
+                    if (reserv.RetrievalDate != null)
+                    {
+                        _context.Entry(reservation).Property(r => r.RetrievalDate).CurrentValue = reserv.RetrievalDate;
+                    }
+
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ReservationExists(reserv.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            //}
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
+            return View(reserv);
+        }
+
+
 
         // GET: Agendamentos/Delete/5
         [Authorize(Roles = "Admin")]

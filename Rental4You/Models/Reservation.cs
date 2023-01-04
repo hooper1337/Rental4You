@@ -14,7 +14,6 @@ namespace Rental4You.Models
         public decimal Price { get; set; }
         [Display(Name = "Date of Request")]
         public DateTime DateTimeOfRequest { get; set; }
-
         [Display(Name = "Vehicle ID:")]
         public int vehicleId { get; set; }
         [Display(Name = "Vehicle")]
@@ -25,7 +24,7 @@ namespace Rental4You.Models
         public ApplicationUser ApplicationUser { get; set; }
 
 
-        [Display(Name = "Number Of Km Of Vehicle on Delivery to Client")]
+        [Display(Name = "Number of km of vehicle on delivery to client")]
         public int? NumberOfKmOfVehicleDelivery { get; set; }
         [Display(Name = "Damage on Vehicle On Delivery")]
         public string? DamageDelivery { get; set; }

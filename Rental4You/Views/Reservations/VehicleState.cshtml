@@ -1,0 +1,81 @@
+﻿@model Rental4You.Models.Reservation
+
+@{
+    ViewData["Title"] = "VehicleState";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Vehicle State</h1>
+
+<h4>Edit Vehicle State</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="VehicleState">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <h5>Vehicle State when delivered to the client</h5>
+
+            <div class="form-group">
+                <label asp-for="NumberOfKmOfVehicleDelivery" class="control-label"></label>
+                <input asp-for="NumberOfKmOfVehicleDelivery" class="form-control" />
+                <span asp-validation-for="NumberOfKmOfVehicleDelivery" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DamageDelivery" class="control-label"></label>
+                <input asp-for="DamageDelivery" class="form-control" />
+                <span asp-validation-for="DamageDelivery" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ObservationsDelivery" class="control-label"></label>
+                <input asp-for="ObservationsDelivery" class="form-control" />
+                <span asp-validation-for="ObservationsDelivery" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmployerDelivery" class="control-label"></label>
+                <input asp-for="EmployerDelivery" class="form-control" />
+                <span asp-validation-for="EmployerDelivery" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DeliveryDate" class="control-label"></label>
+                <input asp-for="DeliveryDate" class="form-control" />
+                <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+            </div>
+
+            <h5>Vehicle State when retrieved from the client</h5>
+
+            <div class="form-group">
+                <label asp-for="NumberOfKmOfVehicleRetrieval" class="control-label"></label>
+                <input asp-for="NumberOfKmOfVehicleRetrieval" class="form-control" />
+                <span asp-validation-for="NumberOfKmOfVehicleRetrieval" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DamageRetrieval" class="control-label"></label>
+                <input asp-for="DamageRetrieval" class="form-control" />
+                <span asp-validation-for="DamageRetrieval" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ObservationsRetrieval" class="control-label"></label>
+                <input asp-for="ObservationsRetrieval" class="form-control" />
+                <span asp-validation-for="ObservationsRetrieval" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="EmployerRetrieval" class="control-label"></label>
+                <input asp-for="EmployerRetrieval" class="form-control" />
+                <span asp-validation-for="EmployerRetrieval" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RetrievalDate" class="control-label"></label>
+                <input asp-for="RetrievalDate" class="form-control" />
+                <span asp-validation-for="RetrievalDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+
+        </form>
+    </div>
+</div>
