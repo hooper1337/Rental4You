@@ -204,7 +204,7 @@ namespace Rental4You.Controllers
                                 select r.ApplicationUser).Distinct();
             ViewData["Client"] = new SelectList(uniqueClients.ToList(), "Id", "firstName");
 
-            return View(model);
+            return View(modelFiltered);
         }
 
 
