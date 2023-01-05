@@ -106,10 +106,15 @@ namespace Rental4You.Controllers
         [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> ListCompanyReservations(
             string? error, 
-            [Bind("ApplicationUserID,CategoryId,DeliveryBeginDateSearch,DeliveryEndDateSearch,RetrievalBeginDateSearch,RetrievalEndDateSearch")] ReservationsViewModel searchReservations
+            [Bind("ApplicationUserID,CategoryId,BeginDate,EndDate")] ReservationsViewModel searchReservations
             )
         {
             var applicationUserId = _userManager.GetUserId(User);
+
+            var me1 = searchReservations.ApplicationUserID;
+            var me2 = searchReservations.CategoryId;
+            var me3= searchReservations.BeginDate;
+            var me4 = searchReservations.EndDate;
 
             List<Reservation> reservations;
             if (HttpContext.User.IsInRole("Employer"))
@@ -128,26 +133,14 @@ namespace Rental4You.Controllers
                 ReservationsList = reservations
             };
             // -------------- Check for erros in the dates --------------
-            if (((searchReservations.DeliveryBeginDateSearch == null || searchReservations.DeliveryBeginDateSearch == default(DateTime)) && (searchReservations.DeliveryEndDateSearch != null && searchReservations.DeliveryEndDateSearch != default(DateTime))) ||
-            ((searchReservations.DeliveryBeginDateSearch != null && searchReservations.DeliveryBeginDateSearch != default(DateTime)) && (searchReservations.DeliveryEndDateSearch == null || searchReservations.DeliveryEndDateSearch == default(DateTime))))
+            if (((searchReservations.BeginDate == null || searchReservations.BeginDate == default(DateTime)) && (searchReservations.EndDate != null && searchReservations.EndDate != default(DateTime))) ||
+            ((searchReservations.BeginDate != null && searchReservations.BeginDate != default(DateTime)) && (searchReservations.EndDate == null || searchReservations.EndDate == default(DateTime))))
             {
 
                 ViewData["ErrorMessage"] = "If you specify a date, you need to specify them both";
                 return View(model);
             }
-            if (searchReservations.DeliveryEndDateSearch < searchReservations.DeliveryBeginDateSearch)
-            {
-
-                ViewData["ErrorMessage"] = "The end date must be after the start date.";
-                return View(model);
-            }
-            if (((searchReservations.RetrievalBeginDateSearch == null || searchReservations.RetrievalBeginDateSearch == default(DateTime)) && (searchReservations.RetrievalEndDateSearch != null && searchReservations.RetrievalEndDateSearch != default(DateTime))) ||
-            ((searchReservations.RetrievalBeginDateSearch != null && searchReservations.RetrievalBeginDateSearch != default(DateTime)) && (searchReservations.RetrievalEndDateSearch == null || searchReservations.RetrievalEndDateSearch == default(DateTime))))
-            {
-                ViewData["ErrorMessage"] = "If you specify a date, you need to specify them both";
-                return View(model);
-            }
-            if (searchReservations.RetrievalEndDateSearch < searchReservations.RetrievalBeginDateSearch)
+            if (searchReservations.EndDate < searchReservations.BeginDate)
             {
 
                 ViewData["ErrorMessage"] = "The end date must be after the start date.";
@@ -173,23 +166,13 @@ namespace Rental4You.Controllers
             foreach (Reservation reservation in reservations)
             {
                 bool available = true;
-                // Check if the time frame of this reservation overlaps with the time frame we're searching for
-                if (searchReservations.DeliveryBeginDateSearch != null && searchReservations.DeliveryBeginDateSearch != default(DateTime) && searchReservations.DeliveryEndDateSearch != null && searchReservations.DeliveryEndDateSearch != default(DateTime))
-                {
-                    if (!(reservation.BeginDate >= searchReservations.DeliveryBeginDateSearch && reservation.BeginDate <= searchReservations.DeliveryEndDateSearch))
-                    {
-                        // reservation.BeginDate is between DeliveryBeginDateSearch and DeliveryEndDateSearch
-                        available = false;
-                    }
-                }
 
-                if (searchReservations.RetrievalBeginDateSearch != null && searchReservations.RetrievalBeginDateSearch != default(DateTime) && searchReservations.RetrievalEndDateSearch != null && searchReservations.RetrievalEndDateSearch != default(DateTime))
+                // Check if the time frame of this reservation overlaps with the time frame we're searching for
+                if ((reservation.BeginDate <= searchReservations.EndDate && reservation.EndDate >= searchReservations.BeginDate) ||
+                    (reservation.EndDate >= searchReservations.BeginDate && reservation.BeginDate <= searchReservations.EndDate))
                 {
-                    if (!(reservation.EndDate >= searchReservations.RetrievalBeginDateSearch && reservation.EndDate <= searchReservations.RetrievalEndDateSearch))
-                    {
-                        // reservation.BeginDate is between DeliveryBeginDateSearch and DeliveryEndDateSearch
-                        available = false;
-                    }
+                    available = false;
+                    break;
                 }
 
                 if (!available)
@@ -445,10 +428,6 @@ namespace Rental4You.Controllers
                     {
                         _context.Entry(reservation).Property(r => r.EmployerDelivery).CurrentValue = reserv.EmployerDelivery;
                     }
-                    if (reserv.DeliveryDate != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.DeliveryDate).CurrentValue = reserv.DeliveryDate;
-                    }
                     if (reserv.NumberOfKmOfVehicleRetrieval != null)
                     {
                         _context.Entry(reservation).Property(r => r.NumberOfKmOfVehicleRetrieval).CurrentValue = reserv.NumberOfKmOfVehicleRetrieval;
@@ -464,10 +443,6 @@ namespace Rental4You.Controllers
                     if (reserv.EmployerRetrieval != null)
                     {
                         _context.Entry(reservation).Property(r => r.EmployerRetrieval).CurrentValue = reserv.EmployerRetrieval;
-                    }
-                    if (reserv.RetrievalDate != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.RetrievalDate).CurrentValue = reserv.RetrievalDate;
                     }
 
                     await _context.SaveChangesAsync();

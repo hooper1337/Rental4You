@@ -32,8 +32,6 @@ namespace Rental4You.Models
         public string? ObservationsDelivery { get; set; }
         [Display(Name = "The Employer that delivered")]
         public string? EmployerDelivery { get; set; }
-        [Display(Name = "Delivery Date")]
-        public DateTime? DeliveryDate { get; set; }
 
 
         [Display(Name = "Number Of Km Of Vehicle on Retrieval from client")]
@@ -44,7 +42,5 @@ namespace Rental4You.Models
         public string? ObservationsRetrieval { get; set; }
         [Display(Name = "The Employer that retrieved the vehicle")]
         public string? EmployerRetrieval { get; set; }
-        [Display(Name = "Retrieval Date")]
-        public DateTime? RetrievalDate { get; set; }
     }
 }

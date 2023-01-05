@@ -69,12 +69,6 @@
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.EmployerDelivery)
             </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.DeliveryDate)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.DeliveryDate)
-            </dd>
 
         <h5>Vehicle State on Retrieval</h5>
         <hr />
@@ -102,12 +96,6 @@
             </dt>
             <dd class="col-sm-10">
                     @Html.DisplayFor(model => model.EmployerRetrieval)
-            </dd>
-            <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.RetrievalDate)
-            </dt>
-            <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.RetrievalDate)
             </dd>
 
         @if (User.IsInRole("Employer") || User.IsInRole("Manager"))
