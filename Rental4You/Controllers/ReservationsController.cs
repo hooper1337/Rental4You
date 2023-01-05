@@ -159,36 +159,37 @@ namespace Rental4You.Controllers
             }
 
 
-            // Check the dates
-            //IQueryable<Reservation> filteredSearchResults = searchReservations;
-            List<Reservation> reservationsToRemove = new List<Reservation>();
-
-            foreach (Reservation reservation in reservations)
+            if (searchReservations.BeginDate != default(DateTime) && searchReservations.EndDate != default(DateTime))
             {
-                bool available = true;
 
-                // Check if the time frame of this reservation overlaps with the time frame we're searching for
-                if ((reservation.BeginDate <= searchReservations.EndDate && reservation.EndDate >= searchReservations.BeginDate) ||
-                    (reservation.EndDate >= searchReservations.BeginDate && reservation.BeginDate <= searchReservations.EndDate))
+                // Check the dates
+                //IQueryable<Reservation> filteredSearchResults = searchReservations;
+                List<Reservation> reservationsToRemove = new List<Reservation>();
+
+                foreach (Reservation reservation in reservations)
                 {
-                    available = false;
-                    break;
+                    bool available = false;
+
+                    // Check if the time frame of this reservation overlaps with the time frame we're searching for
+                    if (reservation.BeginDate <= searchReservations.EndDate && reservation.BeginDate >= searchReservations.BeginDate && reservation.EndDate <= searchReservations.EndDate)
+                    {
+                        available = true;
+                    }
+
+                    if (!available)
+                    {
+                        // Add reservation to the list of reservations to remove
+                        reservationsToRemove.Add(reservation);
+                    }
+
                 }
-
-                if (!available)
+                // Remove reservations from the original list
+                foreach (Reservation reservation in reservationsToRemove)
                 {
-                    // Add reservation to the list of reservations to remove
-                    reservationsToRemove.Add(reservation);
+                    reservations.Remove(reservation);
                 }
 
             }
-            // Remove reservations from the original list
-            foreach (Reservation reservation in reservationsToRemove)
-            {
-                reservations.Remove(reservation);
-            }
-
-
 
             var modelFiltered = new ReservationsViewModel
             {
