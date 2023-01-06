@@ -124,6 +124,15 @@
                                 </div>
                             }
                         </div>
+                        @if (this.User.IsInRole("Manager"))
+                        {
+                            <div class="nav-item dropdown ">
+                                <a class="nav-item nav-link" asp-area="Identity" asp-page="/Account/EmployeeRegister">
+                                    <button type="submit" class="nav-item btn btn-link text-white">Register Employee</button>
+                                </a>
+                            </div>
+                        }
+
                         <div>
                                 <partial name="_LoginPartial" />
                         </div>
