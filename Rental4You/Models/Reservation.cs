@@ -27,7 +27,7 @@ namespace Rental4You.Models
         [Display(Name = "Number of km of vehicle on delivery to client")]
         public int? NumberOfKmOfVehicleDelivery { get; set; }
         [Display(Name = "Damage on Vehicle On Delivery")]
-        public bool? DamageDelivery { get; set; }
+        public Boolean? DamageDelivery { get; set; }
         [Display(Name = "Observations On Delivery")]
         public string? ObservationsDelivery { get; set; }
         [Display(Name = "The Employer that delivered")]
@@ -37,7 +37,7 @@ namespace Rental4You.Models
         [Display(Name = "Number Of Km Of Vehicle on Retrieval from client")]
         public int? NumberOfKmOfVehicleRetrieval { get; set; }
         [Display(Name = "Damage on Vehicle On Retrieval")]
-        public bool? DamageRetrieval { get; set; }
+        public Boolean? DamageRetrieval { get; set; }
         [Display(Name = "Observations On Retrieval")]
         public string? ObservationsRetrieval { get; set; }
         [Display(Name = "The Employer that retrieved the vehicle")]
