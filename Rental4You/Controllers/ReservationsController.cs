@@ -503,37 +503,42 @@ namespace Rental4You.Controllers
                     _context.Update(reservation);
                     await _context.SaveChangesAsync();
 
-                    // ----------- treat Images -----------
-                    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage");
-                    if (!Directory.Exists(path))
-                        Directory.CreateDirectory(path);
-
-                    // diretorio com os ficheiros do curso
-                    string coursePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage/" + reservation.vehicleStateRetrievalId.ToString());
-
-                    if (!Directory.Exists(coursePath))
-                        Directory.CreateDirectory(coursePath);
-
-                    foreach (var formFile in filesDamage)
+                    if (vehicleStateRetrieval.Damage)
                     {
-                        if (formFile.Length > 0)
+                        // ----------- save Images -----------
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage");
+                        if (!Directory.Exists(path))
+                            Directory.CreateDirectory(path);
+
+                        // diretorio com os ficheiros do curso
+                        string coursePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage/" + reservation.vehicleStateRetrievalId.ToString());
+
+                        if (!Directory.Exists(coursePath))
+                            Directory.CreateDirectory(coursePath);
+
+                        foreach (var formFile in filesDamage)
                         {
-                            var filePath = Path.Combine(coursePath,
-                                Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
-
-                            while (System.IO.File.Exists(filePath))
+                            if (formFile.Length > 0)
                             {
-                                filePath = Path.Combine(coursePath,
+                                var filePath = Path.Combine(coursePath,
                                     Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
-                            }
 
-                            using (var stream = System.IO.File.Create(filePath))
-                            {
-                                await formFile.CopyToAsync(stream);
+                                while (System.IO.File.Exists(filePath))
+                                {
+                                    filePath = Path.Combine(coursePath,
+                                        Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
+                                }
+
+                                using (var stream = System.IO.File.Create(filePath))
+                                {
+                                    await formFile.CopyToAsync(stream);
+                                }
                             }
                         }
+                        // ----------- save Images -----------
                     }
-                    // ----------- treat Images -----------
+
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
