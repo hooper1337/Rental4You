@@ -28,14 +28,15 @@ namespace Rental4You.Controllers
         // ---------- Search ----------
         public async Task<IActionResult> Index(
             string? TextToSearch, 
-            [Bind("TextToSearch,Order,BeginDateSearch,EndDateSearch")] SearchVehicleViewModel searchCurso,
-            [Bind("Id,brand,model,CompanyId,type,CompanyId,place,withdraw,deliver,costPerDay")] Vehicle vehicle
+            [Bind("TextToSearch,Order,BeginDateSearch,EndDateSearch")] SearchVehicleViewModel searchCar,
+            [Bind("Id,brand,model,CompanyId,type,CategoryId,place,withdraw,deliver,costPerDay")] Vehicle vehicle
             )
         {
 
+
             if ( // if not both are filled
-                    ( searchCurso.BeginDateSearch == default(DateTime) && searchCurso.EndDateSearch != default(DateTime) ) ||
-                    ( searchCurso.BeginDateSearch != default(DateTime) && searchCurso.EndDateSearch == default(DateTime) )
+                    ( searchCar.BeginDateSearch == default(DateTime) && searchCar.EndDateSearch != default(DateTime) ) ||
+                    ( searchCar.BeginDateSearch != default(DateTime) && searchCar.EndDateSearch == default(DateTime) )
                 )
             {
                 ModelState.AddModelError("BeginDateSearch", "Both start and end dates must be specified.");
@@ -44,7 +45,7 @@ namespace Rental4You.Controllers
                 return RedirectToAction("Index", "Home", new { error = "If you specify a date, you need to specify them both" });
             }
 
-            if (searchCurso.EndDateSearch < searchCurso.BeginDateSearch)
+            if (searchCar.EndDateSearch < searchCar.BeginDateSearch)
             {
                 ModelState.AddModelError("BeginDateSearch", "End Date must be set after BeginDate");
                 ModelState.AddModelError("EndDateSearch", "End Date must be set after BeginDate");
@@ -57,7 +58,7 @@ namespace Rental4You.Controllers
 
             if (string.IsNullOrWhiteSpace(TextToSearch)) {
                 searchResults = _context.vehicles.Include("company").Include("reservations").Include("category"); // .Include("categoria")
-                searchCurso.VehicleList = await searchResults.ToListAsync();
+                searchCar.VehicleList = await searchResults.ToListAsync();
             }
             else
             {
@@ -70,7 +71,7 @@ namespace Rental4You.Controllers
                                 c.company.name.Contains(TextToSearch)
                          );
 
-                searchCurso.TextToSearch = TextToSearch;
+                searchCar.TextToSearch = TextToSearch;
             }
 
             if (vehicle.place != null) {
@@ -79,11 +80,13 @@ namespace Rental4You.Controllers
                 searchResults = searchResults. // Include("categoria").
                     Where(c => c.place.Equals(placeToSearch));
             }
-            if (vehicle.category != null)
+            if (vehicle.CategoryId != null && vehicle.CategoryId != 0)
             {
-                var typeToSearch = _context.vehicles.Find(Convert.ToInt32(vehicle.category.name)).category;
-                searchResults = searchResults. // Include("categoria").
-                    Where(c => c.category.name.Equals(typeToSearch));
+                searchResults = searchResults.Where(c => c.CategoryId == vehicle.CategoryId);
+            }
+            if (vehicle.CompanyId != null && vehicle.CompanyId != 0)
+            {
+                searchResults = searchResults.Where(c => c.CompanyId == vehicle.CompanyId);
             }
 
             // Check the dates
@@ -97,8 +100,8 @@ namespace Rental4You.Controllers
                 foreach (Reservation reservation in veh.reservations)
                 {
                     // Check if the time frame of this reservation overlaps with the time frame we're searching for
-                    if ((reservation.BeginDate <= searchCurso.EndDateSearch && reservation.EndDate >= searchCurso.BeginDateSearch) ||
-                        (reservation.EndDate >= searchCurso.BeginDateSearch && reservation.BeginDate <= searchCurso.EndDateSearch))
+                    if ((reservation.BeginDate <= searchCar.EndDateSearch && reservation.EndDate >= searchCar.BeginDateSearch) ||
+                        (reservation.EndDate >= searchCar.BeginDateSearch && reservation.BeginDate <= searchCar.EndDateSearch))
                     {
                         available = false;
                         break;
@@ -114,19 +117,19 @@ namespace Rental4You.Controllers
             searchResults = filteredSearchResults;
 
 
-            searchCurso.VehicleList = await searchResults.ToListAsync();
-            searchCurso.NumResults = searchCurso.VehicleList.Count();
+            searchCar.VehicleList = await searchResults.ToListAsync();
+            searchCar.NumResults = searchCar.VehicleList.Count();
 
-            if (searchCurso.Order == 1)
-                searchCurso.VehicleList = searchCurso.VehicleList.OrderBy(v => v.costPerDay).ToList();
-            if (searchCurso.Order == 2)
-                searchCurso.VehicleList = searchCurso.VehicleList.OrderByDescending(v => v.costPerDay).ToList();
-            if (searchCurso.Order == 3)
-                searchCurso.VehicleList = searchCurso.VehicleList.OrderBy(v => v.company.classification).ToList();
-            if (searchCurso.Order == 4)
-                searchCurso.VehicleList = searchCurso.VehicleList.OrderByDescending(v => v.company.classification).ToList();
+            if (searchCar.Order == 1)
+                searchCar.VehicleList = searchCar.VehicleList.OrderBy(v => v.costPerDay).ToList();
+            if (searchCar.Order == 2)
+                searchCar.VehicleList = searchCar.VehicleList.OrderByDescending(v => v.costPerDay).ToList();
+            if (searchCar.Order == 3)
+                searchCar.VehicleList = searchCar.VehicleList.OrderBy(v => v.company.classification).ToList();
+            if (searchCar.Order == 4)
+                searchCar.VehicleList = searchCar.VehicleList.OrderByDescending(v => v.company.classification).ToList();
 
-            return View(searchCurso);
+            return View(searchCar);
         }
 
         [HttpPost]
@@ -177,12 +180,29 @@ namespace Rental4You.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.vehicles.Include("company").Include("reservations").Include("category")
+            var vehicle = await _context.vehicles.Include("company").Include("reservations").Include("category").Include("vehicleStateNow")
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
                 return NotFound();
             }
+
+            // directory for the damage (to my brain)
+            string damagePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/img/damage/" + vehicle.vehicleStateId.ToString());
+
+            if (!Directory.Exists(damagePath))
+                Directory.CreateDirectory(damagePath);
+
+            var files = from file in Directory.EnumerateFiles(damagePath)
+                        select string.Format(
+                            "/img/damage/{0}/{1}",
+                            vehicle.vehicleStateId,
+                            Path.GetFileName(file)
+                            );
+            ViewData["FilesDamage"] = files;
+
 
             return View(vehicle);
         }

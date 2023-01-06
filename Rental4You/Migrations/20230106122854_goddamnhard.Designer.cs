@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rental4You.Data;
 
@@ -11,9 +12,10 @@ using Rental4You.Data;
 namespace Rental4You.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230106122854_goddamnhard")]
+    partial class goddamnhard
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -418,16 +420,11 @@ namespace Rental4You.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("vehicleStateId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("CompanyId");
-
-                    b.HasIndex("vehicleStateId");
 
                     b.ToTable("vehicles");
                 });
@@ -444,7 +441,7 @@ namespace Rental4You.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("Damage")
+                    b.Property<bool?>("Damage")
                         .HasColumnType("bit");
 
                     b.Property<int?>("NumberOfKmOfVehicle")
@@ -457,7 +454,7 @@ namespace Rental4You.Migrations
 
                     b.HasIndex("ApplicationUserID");
 
-                    b.ToTable("vehicleStates");
+                    b.ToTable("VehicleState");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -588,15 +585,9 @@ namespace Rental4You.Migrations
                         .WithMany("vehicles")
                         .HasForeignKey("CompanyId");
 
-                    b.HasOne("Rental4You.Models.VehicleState", "vehicleStateNow")
-                        .WithMany()
-                        .HasForeignKey("vehicleStateId");
-
                     b.Navigation("category");
 
                     b.Navigation("company");
-
-                    b.Navigation("vehicleStateNow");
                 });
 
             modelBuilder.Entity("Rental4You.Models.VehicleState", b =>

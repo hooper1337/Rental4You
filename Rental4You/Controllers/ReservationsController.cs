@@ -106,10 +106,15 @@ namespace Rental4You.Controllers
         [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> ListCompanyReservations(
             string? error, 
-            [Bind("ApplicationUserID,CategoryId,DeliveryBeginDateSearch,DeliveryEndDateSearch,RetrievalBeginDateSearch,RetrievalEndDateSearch")] ReservationsViewModel searchReservations
+            [Bind("ApplicationUserID,CategoryId,BeginDate,EndDate")] ReservationsViewModel searchReservations
             )
         {
             var applicationUserId = _userManager.GetUserId(User);
+
+            var me1 = searchReservations.ApplicationUserID;
+            var me2 = searchReservations.CategoryId;
+            var me3= searchReservations.BeginDate;
+            var me4 = searchReservations.EndDate;
 
             List<Reservation> reservations;
             if (HttpContext.User.IsInRole("Employer"))
@@ -128,26 +133,14 @@ namespace Rental4You.Controllers
                 ReservationsList = reservations
             };
             // -------------- Check for erros in the dates --------------
-            if (((searchReservations.DeliveryBeginDateSearch == null || searchReservations.DeliveryBeginDateSearch == default(DateTime)) && (searchReservations.DeliveryEndDateSearch != null && searchReservations.DeliveryEndDateSearch != default(DateTime))) ||
-            ((searchReservations.DeliveryBeginDateSearch != null && searchReservations.DeliveryBeginDateSearch != default(DateTime)) && (searchReservations.DeliveryEndDateSearch == null || searchReservations.DeliveryEndDateSearch == default(DateTime))))
+            if (((searchReservations.BeginDate == null || searchReservations.BeginDate == default(DateTime)) && (searchReservations.EndDate != null && searchReservations.EndDate != default(DateTime))) ||
+            ((searchReservations.BeginDate != null && searchReservations.BeginDate != default(DateTime)) && (searchReservations.EndDate == null || searchReservations.EndDate == default(DateTime))))
             {
 
                 ViewData["ErrorMessage"] = "If you specify a date, you need to specify them both";
                 return View(model);
             }
-            if (searchReservations.DeliveryEndDateSearch < searchReservations.DeliveryBeginDateSearch)
-            {
-
-                ViewData["ErrorMessage"] = "The end date must be after the start date.";
-                return View(model);
-            }
-            if (((searchReservations.RetrievalBeginDateSearch == null || searchReservations.RetrievalBeginDateSearch == default(DateTime)) && (searchReservations.RetrievalEndDateSearch != null && searchReservations.RetrievalEndDateSearch != default(DateTime))) ||
-            ((searchReservations.RetrievalBeginDateSearch != null && searchReservations.RetrievalBeginDateSearch != default(DateTime)) && (searchReservations.RetrievalEndDateSearch == null || searchReservations.RetrievalEndDateSearch == default(DateTime))))
-            {
-                ViewData["ErrorMessage"] = "If you specify a date, you need to specify them both";
-                return View(model);
-            }
-            if (searchReservations.RetrievalEndDateSearch < searchReservations.RetrievalBeginDateSearch)
+            if (searchReservations.EndDate < searchReservations.BeginDate)
             {
 
                 ViewData["ErrorMessage"] = "The end date must be after the start date.";
@@ -166,46 +159,37 @@ namespace Rental4You.Controllers
             }
 
 
-            // Check the dates
-            //IQueryable<Reservation> filteredSearchResults = searchReservations;
-            List<Reservation> reservationsToRemove = new List<Reservation>();
-
-            foreach (Reservation reservation in reservations)
+            if (searchReservations.BeginDate != default(DateTime) && searchReservations.EndDate != default(DateTime))
             {
-                bool available = true;
-                // Check if the time frame of this reservation overlaps with the time frame we're searching for
-                if (searchReservations.DeliveryBeginDateSearch != null && searchReservations.DeliveryBeginDateSearch != default(DateTime) && searchReservations.DeliveryEndDateSearch != null && searchReservations.DeliveryEndDateSearch != default(DateTime))
-                {
-                    if (!(reservation.BeginDate >= searchReservations.DeliveryBeginDateSearch && reservation.BeginDate <= searchReservations.DeliveryEndDateSearch))
-                    {
-                        // reservation.BeginDate is between DeliveryBeginDateSearch and DeliveryEndDateSearch
-                        available = false;
-                    }
-                }
 
-                if (searchReservations.RetrievalBeginDateSearch != null && searchReservations.RetrievalBeginDateSearch != default(DateTime) && searchReservations.RetrievalEndDateSearch != null && searchReservations.RetrievalEndDateSearch != default(DateTime))
-                {
-                    if (!(reservation.EndDate >= searchReservations.RetrievalBeginDateSearch && reservation.EndDate <= searchReservations.RetrievalEndDateSearch))
-                    {
-                        // reservation.BeginDate is between DeliveryBeginDateSearch and DeliveryEndDateSearch
-                        available = false;
-                    }
-                }
+                // Check the dates
+                //IQueryable<Reservation> filteredSearchResults = searchReservations;
+                List<Reservation> reservationsToRemove = new List<Reservation>();
 
-                if (!available)
+                foreach (Reservation reservation in reservations)
                 {
-                    // Add reservation to the list of reservations to remove
-                    reservationsToRemove.Add(reservation);
+                    bool available = false;
+
+                    // Check if the time frame of this reservation overlaps with the time frame we're searching for
+                    if (reservation.BeginDate <= searchReservations.EndDate && reservation.BeginDate >= searchReservations.BeginDate && reservation.EndDate <= searchReservations.EndDate)
+                    {
+                        available = true;
+                    }
+
+                    if (!available)
+                    {
+                        // Add reservation to the list of reservations to remove
+                        reservationsToRemove.Add(reservation);
+                    }
+
+                }
+                // Remove reservations from the original list
+                foreach (Reservation reservation in reservationsToRemove)
+                {
+                    reservations.Remove(reservation);
                 }
 
             }
-            // Remove reservations from the original list
-            foreach (Reservation reservation in reservationsToRemove)
-            {
-                reservations.Remove(reservation);
-            }
-
-
 
             var modelFiltered = new ReservationsViewModel
             {
@@ -221,7 +205,7 @@ namespace Rental4You.Controllers
                                 select r.ApplicationUser).Distinct();
             ViewData["Client"] = new SelectList(uniqueClients.ToList(), "Id", "firstName");
 
-            return View(model);
+            return View(modelFiltered);
         }
 
 
@@ -256,13 +240,17 @@ namespace Rental4You.Controllers
                 return NotFound();
             }
 
-            var reservation = await _context.reservations
+            var reservation = await _context.reservations // .Include("vehicleStateDelivery").Include("vehicleStateRetrieval")
                 .Include(a => a.vehicle)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (reservation == null)
             {
                 return NotFound();
             }
+
+            reservation.vehicleStateDelivery = _context.vehicleStates.Find(reservation.vehicleStateDeliveryId);
+            reservation.vehicleStateRetrieval = _context.vehicleStates.Find(reservation.vehicleStateRetrievalId);
+
 
             return View(reservation);
         }
@@ -390,9 +378,40 @@ namespace Rental4You.Controllers
         }
 
         // GET: Agendamentos/Edit/5
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> VehicleState(int? id)
         {
+            var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+
+            var employers = await userManager.GetUsersInRoleAsync("Employer");
+
+            ViewData["Employers"] = new SelectList(employers, "Id", "firstName");
+
+            var reservation = await _context.reservations.Include("vehicleStateDelivery").Include("vehicleStateRetrieval")
+                .Include(a => a.vehicle)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            // directory for the damage (to my brain)
+            string damagePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/img/damage/" + reservation.vehicleStateRetrievalId.ToString());
+
+            if (!Directory.Exists(damagePath))
+                Directory.CreateDirectory(damagePath);
+
+            var files = from file in Directory.EnumerateFiles(damagePath)
+                        select string.Format(
+                            "/img/damage/{0}/{1}",
+                            reservation.vehicleStateRetrievalId,
+                            Path.GetFileName(file)
+                            );
+            ViewData["FilesDamage"] = files;
+
+
             if (id == null || _context.reservations == null)
             {
                 return NotFound();
@@ -411,71 +430,119 @@ namespace Rental4You.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Employer")]
-        public async Task<IActionResult> VehicleState(int id, [Bind("Id,NumberOfKmOfVehicleDelivery,DamageDelivery,ObservationsDelivery,EmployerDelivery,DeliveryDate,NumberOfKmOfVehicleRetrieval,DamageRetrieval,ObservationsRetrieval,EmployerRetrieval,RetrievalDate")] Reservation reserv)
+        [Authorize(Roles = "Employer, Manager")]
+        public async Task<IActionResult> VehicleState(
+            int id, 
+            [Bind("Id,BeginDate,EndDate,Price,DateTimeOfRequest,vehicleId,vehicle,ApplicationUserID,confirmed,ApplicationUser,vehicleStateDelivery,vehicleStateRetrieval")] Reservation reserv, 
+            [Bind("NumberOfKmOfVehicle,Damage,Observations,ApplicationUserID")] VehicleState vehicleStateDelivery, 
+            [Bind("NumberOfKmOfVehicle,Damage,Observations,ApplicationUserID")] VehicleState vehicleStateRetrieval,
+            [FromForm] List<IFormFile> filesDamage /*has to have same name as input*/
+        )
         {
             if (id != reserv.Id)
             {
                 return NotFound();
             }
 
-            //if (ModelState.IsValid)
-            //{
+            var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+
+            var employers = await userManager.GetUsersInRoleAsync("Employer");
+
+            ViewData["Employers"] = new SelectList(employers, "Id", "firstName");
+
+
+
+
+
+
+            var reservation = await _context.reservations.Include("vehicleStateDelivery").Include("vehicleStateRetrieval")
+                .Include(a => a.vehicle)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+
+            // directory for the damage (to my brain)
+            string damagePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/img/damage/" + reservation.vehicleStateRetrievalId.ToString());
+
+            if (!Directory.Exists(damagePath))
+                Directory.CreateDirectory(damagePath);
+
+            var files = from file in Directory.EnumerateFiles(damagePath)
+                        select string.Format(
+                            "/img/damage/{0}/{1}",
+                            reservation.vehicleStateRetrievalId,
+                            Path.GetFileName(file)
+                            );
+            ViewData["FilesDamage"] = files;
+
+
+            //reserv = _context.reservations.Find(reserv.Id);
+
+            reservation.vehicleStateDelivery = vehicleStateDelivery;
+            reservation.vehicleStateRetrieval = vehicleStateRetrieval;
+
+            // Find the vehicle in the context
+            var vehicle = _context.vehicles.Find(reservation.vehicleId);
+
+            // Set the vehicleStateId property of the vehicle
+            vehicle.vehicleStateId = reservation.vehicleStateRetrievalId;
+
+            // Save the changes to the database
+            _context.SaveChanges();
+
+
+            if (ModelState.IsValid)
+            {
                 try
                 {
-                    var reservation = _context.reservations.Find(id);
-                    if (reservation == null)
-                    {
-                        return NotFound();
-                    }
-
-                    if (reserv.NumberOfKmOfVehicleDelivery != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.NumberOfKmOfVehicleDelivery).CurrentValue = reserv.NumberOfKmOfVehicleDelivery;
-                    }
-                    if (reserv.DamageDelivery != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.DamageDelivery).CurrentValue = reserv.DamageDelivery;
-                    }
-                    if (reserv.ObservationsDelivery != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.ObservationsDelivery).CurrentValue = reserv.ObservationsDelivery;
-                    }
-                    if (reserv.EmployerDelivery != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.EmployerDelivery).CurrentValue = reserv.EmployerDelivery;
-                    }
-                    if (reserv.DeliveryDate != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.DeliveryDate).CurrentValue = reserv.DeliveryDate;
-                    }
-                    if (reserv.NumberOfKmOfVehicleRetrieval != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.NumberOfKmOfVehicleRetrieval).CurrentValue = reserv.NumberOfKmOfVehicleRetrieval;
-                    }
-                    if (reserv.DamageRetrieval != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.DamageRetrieval).CurrentValue = reserv.DamageRetrieval;
-                    }
-                    if (reserv.ObservationsRetrieval != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.ObservationsRetrieval).CurrentValue = reserv.ObservationsRetrieval;
-                    }
-                    if (reserv.EmployerRetrieval != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.EmployerRetrieval).CurrentValue = reserv.EmployerRetrieval;
-                    }
-                    if (reserv.RetrievalDate != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.RetrievalDate).CurrentValue = reserv.RetrievalDate;
-                    }
-
+                    _context.Update(reservation);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(ListCompanyReservations));
+
+                    if (vehicleStateRetrieval.Damage)
+                    {
+                        // ----------- save Images -----------
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage");
+                        if (!Directory.Exists(path))
+                            Directory.CreateDirectory(path);
+
+                        // diretorio com os ficheiros do curso
+                        string coursePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage/" + reservation.vehicleStateRetrievalId.ToString());
+
+                        if (!Directory.Exists(coursePath))
+                            Directory.CreateDirectory(coursePath);
+
+                        foreach (var formFile in filesDamage)
+                        {
+                            if (formFile.Length > 0)
+                            {
+                                var filePath = Path.Combine(coursePath,
+                                    Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
+
+                                while (System.IO.File.Exists(filePath))
+                                {
+                                    filePath = Path.Combine(coursePath,
+                                        Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
+                                }
+
+                                using (var stream = System.IO.File.Create(filePath))
+                                {
+                                    await formFile.CopyToAsync(stream);
+                                }
+                            }
+                        }
+                        // ----------- save Images -----------
+                    }
+
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReservationExists(reserv.Id))
+                    if (!ReservationExists(reservation.Id))
                     {
                         return NotFound();
                     }
@@ -483,10 +550,27 @@ namespace Rental4You.Controllers
                     {
                         throw;
                     }
-                //}
+                }
+                return RedirectToAction(nameof(ListCompanyReservations));
+            } else
+            {
+                String myerror = "";
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        // do something with the error message
+                        myerror += error.ErrorMessage + '\n';
+                    }
+                }
+                ModelState.AddModelError("ErrorMessage", myerror);
+                ViewData["ErrorMessage"] = myerror;
+
             }
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
-            return View(reserv);
+
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reservation.vehicleId);
+            return View(reservation);
+
         }
 
 

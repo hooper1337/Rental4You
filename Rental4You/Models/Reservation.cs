@@ -17,34 +17,20 @@ namespace Rental4You.Models
         [Display(Name = "Vehicle ID:")]
         public int vehicleId { get; set; }
         [Display(Name = "Vehicle")]
-        public Vehicle vehicle { get; set; }
+        public Vehicle? vehicle { get; set; }
         public string ApplicationUserID { get; set; }
         [Display(Name = "Confirmed")]
         public bool confirmed { get; set; }
-        public ApplicationUser ApplicationUser { get; set; }
+        [Display(Name = "ApplicationUser that did the reservation")]
+        public ApplicationUser? ApplicationUser { get; set; }
 
+        public int? vehicleStateDeliveryId { get; set; }
+        [Display(Name = "Company", Prompt = "Choose vehicle State on delivery...")]
+        public VehicleState? vehicleStateDelivery { set; get; }
 
-        [Display(Name = "Number of km of vehicle on delivery to client")]
-        public int? NumberOfKmOfVehicleDelivery { get; set; }
-        [Display(Name = "Damage on Vehicle On Delivery")]
-        public string? DamageDelivery { get; set; }
-        [Display(Name = "Observations On Delivery")]
-        public string? ObservationsDelivery { get; set; }
-        [Display(Name = "The Employer that delivered")]
-        public string? EmployerDelivery { get; set; }
-        [Display(Name = "Delivery Date")]
-        public DateTime? DeliveryDate { get; set; }
+        public int? vehicleStateRetrievalId { get; set; }
+        [Display(Name = "Company", Prompt = "Choose vehicle State on retrieval...")]
+        public VehicleState? vehicleStateRetrieval { set; get; }
 
-
-        [Display(Name = "Number Of Km Of Vehicle on Retrieval from client")]
-        public int? NumberOfKmOfVehicleRetrieval { get; set; }
-        [Display(Name = "Damage on Vehicle On Retrieval")]
-        public string? DamageRetrieval { get; set; }
-        [Display(Name = "Observations On Retrieval")]
-        public string? ObservationsRetrieval { get; set; }
-        [Display(Name = "The Employer that retrieved the vehicle")]
-        public string? EmployerRetrieval { get; set; }
-        [Display(Name = "Retrieval Date")]
-        public DateTime? RetrievalDate { get; set; }
     }
 }

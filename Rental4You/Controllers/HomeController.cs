@@ -31,6 +31,7 @@ namespace Rental4You.Controllers
             ViewData["LocationList"] = new SelectList(uniqueVehiclesPlace.ToList(), "Id", "place");
 
             ViewData["CategoryList"] = new SelectList(_context.categories.ToList(), "Id", "name");
+            ViewData["CompanyList"] = new SelectList(_context.companies.ToList(), "Id", "name");
             // ViewData["withdrawDateList"] = new SelectList(_context.vehicles.ToList(), "Id", "withdrawDate"); // need to change to withdrawDate
 
             return View();

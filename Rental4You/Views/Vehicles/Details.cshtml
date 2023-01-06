@@ -77,6 +77,67 @@
                 }
             }
         </dd>
+
+
+        @if (this.User.IsInRole("Employer") || this.User.IsInRole("Manager"))
+        {
+            
+            <dt class="col-sm-2">
+                <h5>Vehicle State below</h5>
+            </dt>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.vehicleStateNow.NumberOfKmOfVehicle)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.vehicleStateNow.NumberOfKmOfVehicle)
+                </dd>
+
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.vehicleStateNow.Damage)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.vehicleStateNow.Damage)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.vehicleStateNow.Observations)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.vehicleStateNow.Observations)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.vehicleStateNow.ApplicationUser.firstName)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.vehicleStateNow.ApplicationUser.firstName)
+                </dd>
+
+            <div class="row d-flex">
+                @if (ViewBag.FilesDamage != null)
+                {
+                    @foreach (var imgzz in ViewBag.FilesDamage)
+                    {
+                        <div class="col p-2 m-2" style="border-radius: 10px">
+                            <a asp-action="deleteImage"
+                   asp-route-id="@Model.vehicleStateNow"
+                   asp-route-image="@imgzz">
+
+                                <svg bootstrap-icon="XCircleFill"
+                         onclick="return confirm('tem acerteza que deseja apagar esta imagem')"
+                         class="text-danger" width="20" height="24"
+                         aria-label="Trash"></svg>
+                            </a>
+
+                            <img src="@imgzz"
+                     class="img-thumbnail"
+                     style="max-width: 150px; max-height: 150px" />
+
+                        </div>
+                    }
+                }
+            </div>
+        }
+
+
     </dl>
 </div>
 <div>

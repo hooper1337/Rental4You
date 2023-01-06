@@ -21,6 +21,10 @@ namespace Rental4You.Models
         public Company? company { set; get; }
         [Display(Name = "Available", Prompt = "Is this vehicle available...")]
         public Boolean available { set; get; }
+        public int? vehicleStateId { get; set; }
+        [Display(Name = "Company", Prompt = "Choose vehicle State...")]
+        public VehicleState? vehicleStateNow { set; get; }
+
         public ICollection<Reservation>? reservations { get; set; }
     }
 

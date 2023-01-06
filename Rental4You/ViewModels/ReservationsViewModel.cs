@@ -25,14 +25,5 @@ namespace Rental4You.ViewModels
         [Display(Name = "Client")]
         public string? ApplicationUserID { get; set; }
         public ApplicationUser? client { get; set; }
-
-        [Display(Name = "Begin Date Delivery Search", Prompt = "yyyy-mm-dd")]
-        public DateTime? DeliveryBeginDateSearch { get; set; }
-        [Display(Name = "End date Delivery Search", Prompt = "yyyy-mm-dd")]
-        public DateTime? DeliveryEndDateSearch { get; set; }
-        [Display(Name = "Begin Date Retrieval Search", Prompt = "yyyy-mm-dd")]
-        public DateTime? RetrievalBeginDateSearch { get; set; }
-        [Display(Name = "End date Retrieval Search", Prompt = "yyyy-mm-dd")]
-        public DateTime? RetrievalEndDateSearch { get; set; }
     }
 }
