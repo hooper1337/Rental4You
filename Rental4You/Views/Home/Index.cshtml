@@ -24,7 +24,14 @@
                 <select asp-for="CategoryId"
                         asp-items="ViewBag.CategoryList"
                         class="form-control">
-                    <option value="" selected>Type</option>
+                    <option value="" selected>Category</option>
+                </select>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6 px-2">
+                    <select asp-for="CompanyId"
+                        asp-items="ViewBag.CompanyList"
+                        class="form-control">
+                    <option value="" selected>Company</option>
                 </select>
             </div>
 

@@ -24,6 +24,7 @@ namespace Rental4You.Models
         public ApplicationUser ApplicationUser { get; set; }
 
 
+
         [Display(Name = "Number of km of vehicle on delivery to client")]
         public int? NumberOfKmOfVehicleDelivery { get; set; }
         [Display(Name = "Damage on Vehicle On Delivery")]

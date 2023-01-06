@@ -114,7 +114,7 @@
     </dl>
 </div>
 <div>
-    @if (User.IsInRole("Employer"))
+    @if (User.IsInRole("Employer") || User.IsInRole("Manager") )
     {
         <div>For employers:</div>
         <a asp-action="VehicleState" asp-route-id="@Model?.Id">Edit Vehicle States in delivery and retrieval</a>

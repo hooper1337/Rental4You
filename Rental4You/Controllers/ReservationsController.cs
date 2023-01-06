@@ -374,7 +374,7 @@ namespace Rental4You.Controllers
         }
 
         // GET: Agendamentos/Edit/5
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> VehicleState(int? id)
         {
             if (id == null || _context.reservations == null)
@@ -395,7 +395,7 @@ namespace Rental4You.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Employer")]
+        [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> VehicleState(int id, [Bind("Id,NumberOfKmOfVehicleDelivery,DamageDelivery,ObservationsDelivery,EmployerDelivery,DeliveryDate,NumberOfKmOfVehicleRetrieval,DamageRetrieval,ObservationsRetrieval,EmployerRetrieval,RetrievalDate")] Reservation reserv)
         {
             if (id != reserv.Id)
