@@ -486,28 +486,15 @@ namespace Rental4You.Controllers
             reservation.vehicleStateDelivery = vehicleStateDelivery;
             reservation.vehicleStateRetrieval = vehicleStateRetrieval;
 
-            if (reservation.vehicleStateRetrieval.NumberOfKmOfVehicle != null && reservation.vehicleStateRetrieval.Observations != null &&
-                reservation.vehicleStateRetrieval.ApplicationUserID != null)
-            {
-                // Find the vehicle in the context
-                var vehicle = _context.vehicles.Find(reservation.vehicleId);
+            // Find the vehicle in the context
+            var vehicle = _context.vehicles.Find(reservation.vehicleId);
 
-                // Set the vehicleStateId property of the vehicle
-                vehicle.vehicleStateId = reservation.vehicleStateRetrievalId;
+            // Set the vehicleStateId property of the vehicle
+            vehicle.vehicleStateId = reservation.vehicleStateRetrievalId;
 
-                // Save the changes to the database
-                _context.SaveChanges();
-            } else
-            {
-                // Find the vehicle in the context
-                var vehicle = _context.vehicles.Find(reservation.vehicleId);
+            // Save the changes to the database
+            _context.SaveChanges();
 
-                // Set the vehicleStateId property of the vehicle
-                vehicle.vehicleStateId = reservation.vehicleStateDeliveryId;
-
-                // Save the changes to the database
-                _context.SaveChanges();
-            }
 
             if (ModelState.IsValid)
             {
