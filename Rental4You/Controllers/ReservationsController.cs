@@ -426,30 +426,39 @@ namespace Rental4You.Controllers
             ViewData["Employers"] = new SelectList(employers, "Id", "firstName");
 
 
-            IQueryable<Reservation> searchResults = _context.reservations.Include("vehicleStates"); // .Include("categoria")
 
-            reserv = _context.reservations.Find(reserv.Id);
-            reserv.vehicleStateDelivery = vehicleStateDelivery;
-            reserv.vehicleStateRetrieval = vehicleStateRetrieval;
+            var reservation = await _context.reservations.Include("vehicleStateDelivery").Include("vehicleStateRetrieval")
+                .Include(a => a.vehicle)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
 
-            if (reserv.vehicleStateRetrieval.NumberOfKmOfVehicle != null && reserv.vehicleStateRetrieval.Observations != null &&
-                reserv.vehicleStateRetrieval.ApplicationUserID != null)
+
+            //reserv = _context.reservations.Find(reserv.Id);
+
+            reservation.vehicleStateDelivery = vehicleStateDelivery;
+            reservation.vehicleStateRetrieval = vehicleStateRetrieval;
+
+            if (reservation.vehicleStateRetrieval.NumberOfKmOfVehicle != null && reservation.vehicleStateRetrieval.Observations != null &&
+                reservation.vehicleStateRetrieval.ApplicationUserID != null)
             {
                 // Find the vehicle in the context
-                var vehicle = _context.vehicles.Find(reserv.vehicleId);
+                var vehicle = _context.vehicles.Find(reservation.vehicleId);
 
                 // Set the vehicleStateId property of the vehicle
-                vehicle.vehicleStateId = reserv.vehicleStateRetrievalId;
+                vehicle.vehicleStateId = reservation.vehicleStateRetrievalId;
 
                 // Save the changes to the database
                 _context.SaveChanges();
             } else
             {
                 // Find the vehicle in the context
-                var vehicle = _context.vehicles.Find(reserv.vehicleId);
+                var vehicle = _context.vehicles.Find(reservation.vehicleId);
 
                 // Set the vehicleStateId property of the vehicle
-                vehicle.vehicleStateId = reserv.vehicleStateDeliveryId;
+                vehicle.vehicleStateId = reservation.vehicleStateDeliveryId;
 
                 // Save the changes to the database
                 _context.SaveChanges();
@@ -459,7 +468,7 @@ namespace Rental4You.Controllers
             {
                 try
                 {
-                    _context.Update(reserv);
+                    _context.Update(reservation);
                     await _context.SaveChangesAsync();
 
                     // ----------- treat Images -----------
@@ -496,7 +505,7 @@ namespace Rental4You.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ReservationExists(reserv.Id))
+                    if (!ReservationExists(reservation.Id))
                     {
                         return NotFound();
                     }
@@ -522,8 +531,8 @@ namespace Rental4You.Controllers
 
             }
 
-            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
-            return View(reserv);
+            ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reservation.vehicleId);
+            return View(reservation);
 
         }
 
