@@ -187,6 +187,23 @@ namespace Rental4You.Controllers
                 return NotFound();
             }
 
+            // directory for the damage (to my brain)
+            string damagePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/img/damage/" + vehicle.vehicleStateId.ToString());
+
+            if (!Directory.Exists(damagePath))
+                Directory.CreateDirectory(damagePath);
+
+            var files = from file in Directory.EnumerateFiles(damagePath)
+                        select string.Format(
+                            "/img/damage/{0}/{1}",
+                            vehicle.vehicleStateId,
+                            Path.GetFileName(file)
+                            );
+            ViewData["FilesDamage"] = files;
+
+
             return View(vehicle);
         }
 
