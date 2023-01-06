@@ -180,7 +180,7 @@ namespace Rental4You.Controllers
                 return NotFound();
             }
 
-            var vehicle = await _context.vehicles.Include("company").Include("reservations").Include("category")
+            var vehicle = await _context.vehicles.Include("company").Include("reservations").Include("category").Include("vehicleStateNow")
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {

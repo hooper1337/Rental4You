@@ -418,11 +418,16 @@ namespace Rental4You.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("vehicleStateId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
                     b.HasIndex("CompanyId");
+
+                    b.HasIndex("vehicleStateId");
 
                     b.ToTable("vehicles");
                 });
@@ -583,9 +588,15 @@ namespace Rental4You.Migrations
                         .WithMany("vehicles")
                         .HasForeignKey("CompanyId");
 
+                    b.HasOne("Rental4You.Models.VehicleState", "vehicleStateNow")
+                        .WithMany()
+                        .HasForeignKey("vehicleStateId");
+
                     b.Navigation("category");
 
                     b.Navigation("company");
+
+                    b.Navigation("vehicleStateNow");
                 });
 
             modelBuilder.Entity("Rental4You.Models.VehicleState", b =>

@@ -240,7 +240,7 @@ namespace Rental4You.Controllers
                 return NotFound();
             }
 
-            var reservation = await _context.reservations
+            var reservation = await _context.reservations // .Include("vehicleStateDelivery").Include("vehicleStateRetrieval")
                 .Include(a => a.vehicle)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (reservation == null)
@@ -430,6 +430,29 @@ namespace Rental4You.Controllers
             reserv = _context.reservations.Find(reserv.Id);
             reserv.vehicleStateDelivery = vehicleStateDelivery;
             reserv.vehicleStateRetrieval = vehicleStateRetrieval;
+
+            if (reserv.vehicleStateRetrieval.NumberOfKmOfVehicle != null && reserv.vehicleStateRetrieval.Observations != null &&
+                reserv.vehicleStateRetrieval.ApplicationUserID != null)
+            {
+                // Find the vehicle in the context
+                var vehicle = _context.vehicles.Find(reserv.vehicleId);
+
+                // Set the vehicleStateId property of the vehicle
+                vehicle.vehicleStateId = reserv.vehicleStateRetrievalId;
+
+                // Save the changes to the database
+                _context.SaveChanges();
+            } else
+            {
+                // Find the vehicle in the context
+                var vehicle = _context.vehicles.Find(reserv.vehicleId);
+
+                // Set the vehicleStateId property of the vehicle
+                vehicle.vehicleStateId = reserv.vehicleStateDeliveryId;
+
+                // Save the changes to the database
+                _context.SaveChanges();
+            }
 
             if (ModelState.IsValid)
             {
