@@ -486,21 +486,18 @@ namespace Rental4You.Controllers
             reservation.vehicleStateDelivery = vehicleStateDelivery;
             reservation.vehicleStateRetrieval = vehicleStateRetrieval;
 
-            // Find the vehicle in the context
-            var vehicle = _context.vehicles.Find(reservation.vehicleId);
-
-            // Set the vehicleStateId property of the vehicle
-            vehicle.vehicleStateId = reservation.vehicleStateRetrievalId;
-
-            // Save the changes to the database
-            _context.SaveChanges();
-
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(reservation);
+
+                    await _context.SaveChangesAsync();
+
+                    // Set the vehicleStateId property of the vehicle
+                    _context.vehicles.Find(reservation.vehicleId).vehicleStateId = reservation.vehicleStateRetrievalId;
+
                     await _context.SaveChangesAsync();
 
                     if (vehicleStateRetrieval.Damage)
@@ -538,7 +535,7 @@ namespace Rental4You.Controllers
                         // ----------- save Images -----------
                     }
 
-
+                    _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
