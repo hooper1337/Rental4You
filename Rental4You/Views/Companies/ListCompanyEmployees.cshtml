@@ -40,9 +40,9 @@
                     @Html.DisplayFor(modelItem => item.company.name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.available)
+                    @Html.DisplayFor(modelItem => item.applicationUser.available)
                 </td>
-                    @if(item.available)
+                @if (item.applicationUser.available)
                     {
                         <td>
                             <a asp-action="makeEmployeeAvailableUnavailable"  asp-route-id="@item.Id" class="btn btn-danger">Make unavailable</a>

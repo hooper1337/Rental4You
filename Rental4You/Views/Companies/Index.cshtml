@@ -5,12 +5,28 @@
 }
 
 <h1>Index</h1>
-
 <p>
     <p>
        <small>(<a asp-action="Create">Add new company</a>)</small>
     </p>
 </p>
+
+@using (Html.BeginForm("Search", "Companies", FormMethod.Get))
+{
+    <div class="row">
+        <div class="col-10" style="padding: 20px">
+            Search:
+            <input type="text" for="textToSearch" id="textToSearch" name="textToSearch" />
+            Available:
+            <input type="checkbox" for="available" id="available" name="available" value="true" />
+            <input type="hidden" for="available" id="available" name="available" value="false"/>
+            <input type="submit" class="btn btn-primary" value="Search" />
+        </div>
+    </div>
+}
+
+
+
 <table class="table">
     <thead>
         <tr>

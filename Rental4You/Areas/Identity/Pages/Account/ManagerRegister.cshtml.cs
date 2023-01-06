@@ -105,6 +105,7 @@ namespace Rental4You.Areas.Identity.Pages.Account
                 user.lastName = Input.lastName;
                 user.nif = Input.nif;
                 user.bornDate = Input.bornDate;
+                user.available = true;
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
@@ -117,7 +118,6 @@ namespace Rental4You.Areas.Identity.Pages.Account
                     {
                         CompanyId = currManager.CompanyId,
                         company = currManager.company,
-                        available = true,
                         applicationUser = user
                     };
 

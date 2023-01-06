@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Rental4You.Data;
 using Rental4You.Models;
+using Rental4You.ViewModels;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Rental4You.Controllers
@@ -33,6 +35,33 @@ namespace Rental4You.Controllers
         {
               return View(await _context.companies.Include("vehicles").ToListAsync());
         }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Search(string? textToSearch, Boolean? available)
+        {
+            SearchCompanyViewModel searchCompany = new SearchCompanyViewModel();
+            if (string.IsNullOrWhiteSpace(textToSearch) && available == null)
+            {
+                searchCompany.companyList = await _context.companies.Include("vehicles").ToListAsync();
+            }
+            if (available != null && textToSearch != null)
+            {
+                searchCompany.companyList = await _context.companies.Include("vehicles").Where(c => c.available == available && c.name.Contains(textToSearch)).ToListAsync();
+            }
+
+            if (textToSearch != null && available == null)
+            {
+                searchCompany.companyList = await _context.companies.Include("vehicles").Where(c => c.name == textToSearch).ToListAsync();
+            }
+
+            if (available != null && textToSearch == null)
+            {
+                searchCompany.companyList = await _context.companies.Include("vehicles").Where(c => c.available == available).ToListAsync();
+            }
+            searchCompany.numberOfResults = await _context.companies.CountAsync();
+            return View(searchCompany);
+        }
+
 
         // GET: Companies/Details/5
         [Authorize(Roles = "Admin")]
@@ -79,6 +108,7 @@ namespace Rental4You.Controllers
                 user.nif = 0;
                 user.bornDate = DateTime.Today;
                 user.EmailConfirmed = true;
+                user.available = true;
 
                 var result = await _userManager.CreateAsync(user, "Jogodohugo2001!");
                 if(result.Succeeded)
@@ -89,8 +119,7 @@ namespace Rental4You.Controllers
                     {
                         CompanyId = company.Id,
                         company = company,
-                        applicationUser = user,
-                        available = true
+                        applicationUser = user
                     };
                     _context.Update(manager);
                     await _context.SaveChangesAsync();
@@ -141,9 +170,9 @@ namespace Rental4You.Controllers
             {
                 return NotFound();
             }
-            if (employee.available == true) {
-            
-                employee.available = false;
+            if (employee.applicationUser.available == true) {
+
+                employee.applicationUser.available = false;
                 var userTask = _userManager.FindByEmailAsync(employee.applicationUser.Email);
                 userTask.Wait();
                 var user = userTask.Result;
@@ -154,7 +183,7 @@ namespace Rental4You.Controllers
             }
             else 
             {
-                employee.available = true;
+                employee.applicationUser.available = true;
                 var userTask = _userManager.FindByEmailAsync(employee.applicationUser.Email);
                 userTask.Wait();
                 var user = userTask.Result;
@@ -195,10 +224,10 @@ namespace Rental4You.Controllers
             {
                 return NotFound();
             }
-            if (manager.available == true)
+            if (manager.applicationUser.available == true)
             {
 
-                manager.available = false;
+                manager.applicationUser.available = false;
                 var userTask = _userManager.FindByEmailAsync(manager.applicationUser.Email);
                 userTask.Wait();
                 var user = userTask.Result;
@@ -209,7 +238,7 @@ namespace Rental4You.Controllers
             }
             else
             {
-                manager.available = true;
+                manager.applicationUser.available = true;
                 var userTask = _userManager.FindByEmailAsync(manager.applicationUser.Email);
                 userTask.Wait();
                 var user = userTask.Result;

@@ -1,0 +1,65 @@
+﻿@model Rental4You.ViewModels.SearchCompanyViewModel
+
+<h1>Companies (Search)</h1>
+
+
+<p>Exist/s @Model.companyList.Count companys available.</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Company Name
+            </th>
+            <th>
+                Classification
+            </th>
+            <th>
+                Cars
+            </th>
+            <th>
+                Available
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.companyList)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.classification)
+                </td>
+                <td>
+                    @if (item.vehicles.Count == 0)
+                    {
+                        <a>No vehicles to display</a>
+                    }
+                    @if (item.vehicles.Count != 0)
+                    {
+                        var counter = 0;
+                        @foreach (var vehicle in item.vehicles)
+                        {
+                            var vehicleDisplay = vehicle.brand + " " + vehicle.model;
+                            counter++;
+                            if (counter == item.vehicles.Count)
+                            {
+                                vehicleDisplay += " ";
+                            }
+                            else
+                            {
+                                vehicleDisplay += ", ";
+                            }
+                            @Html.DisplayFor(modelItem => vehicleDisplay)
+                        }
+                    }
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.available)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

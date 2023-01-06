@@ -9,7 +9,6 @@ namespace Rental4You.Models
         public int CompanyId { get; set; }
         public Company company { get; set; }
         [Display(Name = "Available")]
-        public Boolean available { get; set; }
         public ApplicationUser applicationUser { get; set; }
     }
 }
