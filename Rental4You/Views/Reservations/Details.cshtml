@@ -45,6 +45,7 @@
         <h5>Vehicle State on Delivery</h5>
         <hr />
         <dl class="row">
+
             <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.vehicleStateDelivery.NumberOfKmOfVehicle)
             </dt>
@@ -55,6 +56,11 @@
                 @Html.DisplayNameFor(model => model.vehicleStateDelivery.Damage)
             </dt>
             <dd class="col-sm-10">
+                @if (Model.vehicleStateDelivery != null)
+                {
+                    var me = Model.vehicleStateDelivery;
+                    var me2 = Model.vehicleStateDeliveryId;
+                }
                 @Html.DisplayFor(model => model.vehicleStateDelivery.Damage)
             </dd>
             <dt class="col-sm-2">

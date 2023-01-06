@@ -248,6 +248,10 @@ namespace Rental4You.Controllers
                 return NotFound();
             }
 
+            reservation.vehicleStateDelivery = _context.vehicleStates.Find(reservation.vehicleStateDeliveryId);
+            reservation.vehicleStateRetrieval = _context.vehicleStates.Find(reservation.vehicleStateRetrievalId);
+
+
             return View(reservation);
         }
 
