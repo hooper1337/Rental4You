@@ -46,56 +46,56 @@
         <hr />
         <dl class="row">
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.NumberOfKmOfVehicleDelivery)
+                @Html.DisplayNameFor(model => model.vehicleStateDelivery.NumberOfKmOfVehicle)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.NumberOfKmOfVehicleDelivery)
+                @Html.DisplayFor(model => model.vehicleStateDelivery.NumberOfKmOfVehicle)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.DamageDelivery)
+                @Html.DisplayNameFor(model => model.vehicleStateDelivery.Damage)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.DamageDelivery)
+                @Html.DisplayFor(model => model.vehicleStateDelivery.Damage)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.ObservationsDelivery)
+                @Html.DisplayNameFor(model => model.vehicleStateDelivery.Observations)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.ObservationsDelivery)
+                @Html.DisplayFor(model => model.vehicleStateDelivery.Observations)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.EmployerDelivery)
+                @Html.DisplayNameFor(model => model.vehicleStateDelivery.ApplicationUser.firstName)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.EmployerDelivery)
+                @Html.DisplayFor(model => model.vehicleStateDelivery.ApplicationUser.firstName)
             </dd>
 
         <h5>Vehicle State on Retrieval</h5>
         <hr />
         <dl class="row">
             <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.NumberOfKmOfVehicleRetrieval)
+                    @Html.DisplayNameFor(model => model.vehicleStateRetrieval.NumberOfKmOfVehicle)
             </dt>
             <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.NumberOfKmOfVehicleRetrieval)
+                    @Html.DisplayFor(model => model.vehicleStateRetrieval.NumberOfKmOfVehicle)
             </dd>
             <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.DamageRetrieval)
+                    @Html.DisplayNameFor(model => model.vehicleStateRetrieval.Damage)
             </dt>
             <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.DamageRetrieval)
+                    @Html.DisplayFor(model => model.vehicleStateRetrieval.Damage)
             </dd>
             <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.ObservationsRetrieval)
+                    @Html.DisplayNameFor(model => model.vehicleStateRetrieval.Observations)
             </dt>
             <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.ObservationsRetrieval)
+                    @Html.DisplayFor(model => model.vehicleStateRetrieval.Observations)
             </dd>
             <dt class="col-sm-2">
-                    @Html.DisplayNameFor(model => model.EmployerRetrieval)
+                    @Html.DisplayNameFor(model => model.vehicleStateRetrieval.ApplicationUser.firstName)
             </dt>
             <dd class="col-sm-10">
-                    @Html.DisplayFor(model => model.EmployerRetrieval)
+                    @Html.DisplayFor(model => model.vehicleStateRetrieval.ApplicationUser.firstName)
             </dd>
 
         @if (User.IsInRole("Employer") || User.IsInRole("Manager"))

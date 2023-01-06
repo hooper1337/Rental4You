@@ -352,44 +352,14 @@ namespace Rental4You.Migrations
                     b.Property<DateTime>("BeginDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("DamageDelivery")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("DamageRetrieval")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("DateTimeOfRequest")
                         .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DeliveryDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EmployerDelivery")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EmployerRetrieval")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("NumberOfKmOfVehicleDelivery")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NumberOfKmOfVehicleRetrieval")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ObservationsDelivery")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ObservationsRetrieval")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("RetrievalDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("confirmed")
                         .HasColumnType("bit");
@@ -397,11 +367,21 @@ namespace Rental4You.Migrations
                     b.Property<int>("vehicleId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("vehicleStateDeliveryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("vehicleStateRetrievalId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationUserID");
 
                     b.HasIndex("vehicleId");
+
+                    b.HasIndex("vehicleStateDeliveryId");
+
+                    b.HasIndex("vehicleStateRetrievalId");
 
                     b.ToTable("reservations");
                 });
@@ -445,6 +425,34 @@ namespace Rental4You.Migrations
                     b.HasIndex("CompanyId");
 
                     b.ToTable("vehicles");
+                });
+
+            modelBuilder.Entity("Rental4You.Models.VehicleState", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ApplicationUserID")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("Damage")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("NumberOfKmOfVehicle")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Observations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationUserID");
+
+                    b.ToTable("vehicleStates");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -546,9 +554,21 @@ namespace Rental4You.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Rental4You.Models.VehicleState", "vehicleStateDelivery")
+                        .WithMany()
+                        .HasForeignKey("vehicleStateDeliveryId");
+
+                    b.HasOne("Rental4You.Models.VehicleState", "vehicleStateRetrieval")
+                        .WithMany()
+                        .HasForeignKey("vehicleStateRetrievalId");
+
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("vehicle");
+
+                    b.Navigation("vehicleStateDelivery");
+
+                    b.Navigation("vehicleStateRetrieval");
                 });
 
             modelBuilder.Entity("Rental4You.Models.Vehicle", b =>
@@ -566,6 +586,17 @@ namespace Rental4You.Migrations
                     b.Navigation("category");
 
                     b.Navigation("company");
+                });
+
+            modelBuilder.Entity("Rental4You.Models.VehicleState", b =>
+                {
+                    b.HasOne("Rental4You.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("ApplicationUserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Rental4You.Models.Category", b =>

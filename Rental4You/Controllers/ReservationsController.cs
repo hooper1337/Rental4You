@@ -377,6 +377,12 @@ namespace Rental4You.Controllers
         [Authorize(Roles = "Employer, Manager")]
         public async Task<IActionResult> VehicleState(int? id)
         {
+            var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+
+            var employers = await userManager.GetUsersInRoleAsync("Employer");
+
+            ViewData["Employers"] = new SelectList(employers, "Id", "firstName");
+
             if (id == null || _context.reservations == null)
             {
                 return NotFound();
@@ -396,58 +402,37 @@ namespace Rental4You.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Employer, Manager")]
-        public async Task<IActionResult> VehicleState(int id, [Bind("Id,NumberOfKmOfVehicleDelivery,DamageDelivery,ObservationsDelivery,EmployerDelivery,DeliveryDate,NumberOfKmOfVehicleRetrieval,DamageRetrieval,ObservationsRetrieval,EmployerRetrieval,RetrievalDate")] Reservation reserv)
+        public async Task<IActionResult> VehicleState(
+            int id, 
+            [Bind("Id,BeginDate,EndDate,Price,DateTimeOfRequest,vehicleId,vehicle,ApplicationUserID,confirmed,ApplicationUser,vehicleStateDelivery,vehicleStateRetrieval")] Reservation reserv, 
+            [Bind("NumberOfKmOfVehicle,Damage,Observations,ApplicationUserID")] VehicleState vehicleStateDelivery, 
+            [Bind("NumberOfKmOfVehicle,Damage,Observations,ApplicationUserID")] VehicleState vehicleStateRetrieval
+        )
         {
             if (id != reserv.Id)
             {
                 return NotFound();
             }
 
-            //if (ModelState.IsValid)
-            //{
+            var userManager = HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+
+            var employers = await userManager.GetUsersInRoleAsync("Employer");
+
+            ViewData["Employers"] = new SelectList(employers, "Id", "firstName");
+
+
+            IQueryable<Reservation> searchResults = _context.reservations.Include("vehicleStates"); // .Include("categoria")
+
+            reserv = _context.reservations.Find(reserv.Id);
+            reserv.vehicleStateDelivery = vehicleStateDelivery;
+            reserv.vehicleStateRetrieval = vehicleStateRetrieval;
+
+            if (ModelState.IsValid)
+            {
                 try
                 {
-                    var reservation = _context.reservations.Find(id);
-                    if (reservation == null)
-                    {
-                        return NotFound();
-                    }
-
-                    if (reserv.NumberOfKmOfVehicleDelivery != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.NumberOfKmOfVehicleDelivery).CurrentValue = reserv.NumberOfKmOfVehicleDelivery;
-                    }
-                    if (reserv.DamageDelivery != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.DamageDelivery).CurrentValue = reserv.DamageDelivery;
-                    }
-                    if (reserv.ObservationsDelivery != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.ObservationsDelivery).CurrentValue = reserv.ObservationsDelivery;
-                    }
-                    if (reserv.EmployerDelivery != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.EmployerDelivery).CurrentValue = reserv.EmployerDelivery;
-                    }
-                    if (reserv.NumberOfKmOfVehicleRetrieval != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.NumberOfKmOfVehicleRetrieval).CurrentValue = reserv.NumberOfKmOfVehicleRetrieval;
-                    }
-                    if (reserv.DamageRetrieval != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.DamageRetrieval).CurrentValue = reserv.DamageRetrieval;
-                    }
-                    if (reserv.ObservationsRetrieval != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.ObservationsRetrieval).CurrentValue = reserv.ObservationsRetrieval;
-                    }
-                    if (reserv.EmployerRetrieval != null)
-                    {
-                        _context.Entry(reservation).Property(r => r.EmployerRetrieval).CurrentValue = reserv.EmployerRetrieval;
-                    }
-
+                    _context.Update(reserv);
                     await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(ListCompanyReservations));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -459,10 +444,27 @@ namespace Rental4You.Controllers
                     {
                         throw;
                     }
-                //}
+                }
+                return RedirectToAction(nameof(ListCompanyReservations));
+            } else
+            {
+                String myerror = "";
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        // do something with the error message
+                        myerror += error.ErrorMessage + '\n';
+                    }
+                }
+                ModelState.AddModelError("ErrorMessage", myerror);
+                ViewData["ErrorMessage"] = myerror;
+
             }
+
             ViewData["CarList"] = new SelectList(_context.vehicles.ToList(), "Id", "brand", reserv.vehicleId);
             return View(reserv);
+
         }
 
 
