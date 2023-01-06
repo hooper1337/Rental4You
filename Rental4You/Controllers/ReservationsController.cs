@@ -410,7 +410,9 @@ namespace Rental4You.Controllers
             int id, 
             [Bind("Id,BeginDate,EndDate,Price,DateTimeOfRequest,vehicleId,vehicle,ApplicationUserID,confirmed,ApplicationUser,vehicleStateDelivery,vehicleStateRetrieval")] Reservation reserv, 
             [Bind("NumberOfKmOfVehicle,Damage,Observations,ApplicationUserID")] VehicleState vehicleStateDelivery, 
-            [Bind("NumberOfKmOfVehicle,Damage,Observations,ApplicationUserID")] VehicleState vehicleStateRetrieval
+            [Bind("NumberOfKmOfVehicle,Damage,Observations,ApplicationUserID")] VehicleState vehicleStateRetrieval,
+            [FromForm] List<IFormFile> filesDamage /*has to have same name as input*/
+
         )
         {
             if (id != reserv.Id)
@@ -431,35 +433,74 @@ namespace Rental4You.Controllers
             reserv.vehicleStateDelivery = vehicleStateDelivery;
             reserv.vehicleStateRetrieval = vehicleStateRetrieval;
 
-            if (reserv.vehicleStateRetrieval.NumberOfKmOfVehicle != null && reserv.vehicleStateRetrieval.Observations != null &&
-                reserv.vehicleStateRetrieval.ApplicationUserID != null)
-            {
-                // Find the vehicle in the context
-                var vehicle = _context.vehicles.Find(reserv.vehicleId);
-
-                // Set the vehicleStateId property of the vehicle
-                vehicle.vehicleStateId = reserv.vehicleStateRetrievalId;
-
-                // Save the changes to the database
-                _context.SaveChanges();
-            } else
-            {
-                // Find the vehicle in the context
-                var vehicle = _context.vehicles.Find(reserv.vehicleId);
-
-                // Set the vehicleStateId property of the vehicle
-                vehicle.vehicleStateId = reserv.vehicleStateDeliveryId;
-
-                // Save the changes to the database
-                _context.SaveChanges();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
                     _context.Update(reserv);
+
+                    if (
+                            reserv.vehicleStateRetrieval.NumberOfKmOfVehicle != null && 
+                            reserv.vehicleStateRetrieval.Observations != null && 
+                            reserv.vehicleStateRetrieval.ApplicationUserID != null
+                        )
+                    {
+                        // Find the vehicle in the context
+                        var vehicle = _context.vehicles.Find(reserv.vehicleId);
+
+                        // Set the vehicleStateId property of the vehicle
+                        vehicle.vehicleStateId = reserv.vehicleStateRetrievalId;
+
+                        // Save the changes to the database
+                        //_context.SaveChanges();
+                    }
+                    else
+                    {
+                        // Find the vehicle in the context
+                        var vehicle = _context.vehicles.Find(reserv.vehicleId);
+
+                        // Set the vehicleStateId property of the vehicle
+                        vehicle.vehicleStateId = reserv.vehicleStateDeliveryId;
+
+                        // Save the changes to the database
+                        //_context.SaveChanges();
+                    }
+
                     await _context.SaveChangesAsync();
+
+                    // ----------- treat Images -----------
+                    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage");
+                    if (!Directory.Exists(path))
+                        Directory.CreateDirectory(path);
+
+                    // diretorio com os ficheiros do curso
+                    string coursePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage/" + id.ToString());
+
+                    if (!Directory.Exists(coursePath))
+                        Directory.CreateDirectory(coursePath);
+
+                    foreach (var formFile in filesDamage)
+                    {
+                        if (formFile.Length > 0)
+                        {
+                            var filePath = Path.Combine(coursePath,
+                                Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
+
+                            while (System.IO.File.Exists(filePath))
+                            {
+                                filePath = Path.Combine(coursePath,
+                                    Guid.NewGuid().ToString() + Path.GetExtension(formFile.FileName));
+                            }
+
+                            using (var stream = System.IO.File.Create(filePath))
+                            {
+                                await formFile.CopyToAsync(stream);
+                            }
+                        }
+                    }
+                    // ----------- treat Images -----------
+
+
                 }
                 catch (DbUpdateConcurrencyException)
                 {
