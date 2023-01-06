@@ -387,6 +387,31 @@ namespace Rental4You.Controllers
 
             ViewData["Employers"] = new SelectList(employers, "Id", "firstName");
 
+            var reservation = await _context.reservations.Include("vehicleStateDelivery").Include("vehicleStateRetrieval")
+                .Include(a => a.vehicle)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            // directory for the damage (to my brain)
+            string damagePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/img/damage/" + reservation.vehicleStateRetrievalId.ToString());
+
+            if (!Directory.Exists(damagePath))
+                Directory.CreateDirectory(damagePath);
+
+            var files = from file in Directory.EnumerateFiles(damagePath)
+                        select string.Format(
+                            "/img/damage/{0}/{1}",
+                            reservation.vehicleStateRetrievalId,
+                            Path.GetFileName(file)
+                            );
+            ViewData["FilesDamage"] = files;
+
+
             if (id == null || _context.reservations == null)
             {
                 return NotFound();
@@ -427,6 +452,9 @@ namespace Rental4You.Controllers
 
 
 
+
+
+
             var reservation = await _context.reservations.Include("vehicleStateDelivery").Include("vehicleStateRetrieval")
                 .Include(a => a.vehicle)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -434,6 +462,23 @@ namespace Rental4You.Controllers
             {
                 return NotFound();
             }
+
+
+            // directory for the damage (to my brain)
+            string damagePath = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot/img/damage/" + reservation.vehicleStateRetrievalId.ToString());
+
+            if (!Directory.Exists(damagePath))
+                Directory.CreateDirectory(damagePath);
+
+            var files = from file in Directory.EnumerateFiles(damagePath)
+                        select string.Format(
+                            "/img/damage/{0}/{1}",
+                            reservation.vehicleStateRetrievalId,
+                            Path.GetFileName(file)
+                            );
+            ViewData["FilesDamage"] = files;
 
 
             //reserv = _context.reservations.Find(reserv.Id);
@@ -477,7 +522,7 @@ namespace Rental4You.Controllers
                         Directory.CreateDirectory(path);
 
                     // diretorio com os ficheiros do curso
-                    string coursePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage/" + id.ToString());
+                    string coursePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img/damage/" + reservation.vehicleStateRetrievalId.ToString());
 
                     if (!Directory.Exists(coursePath))
                         Directory.CreateDirectory(coursePath);
