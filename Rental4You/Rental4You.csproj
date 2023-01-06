@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="DataBase\" />
-    <Folder Include="wwwroot\img\damage\" />
   </ItemGroup>
 
 </Project>

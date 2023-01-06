@@ -16,10 +16,16 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="VehicleState" enctype="multipart/form-data">
+        <form asp-action="VehicleState">
 
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+
+            <input type="hidden" asp-for="vehicleId" value="@Model.vehicleId" />
+            <input type="hidden" asp-for="ApplicationUserID" value="@Model.ApplicationUserID" />
+            <input type="hidden" asp-for="ApplicationUser" value="@Model.ApplicationUser" />
+
+
 
 
 
@@ -68,25 +74,6 @@
                 <input asp-for="vehicleStateRetrieval.Damage" class="form-control" />
                 <span asp-validation-for="vehicleStateRetrieval.Damage" class="text-danger"></span>
             </div>
-
-            <div class="form-floating">
-                <div>
-                    <img id="MyAvatar" class="img-thumbnail" />
-                </div>
-                <div>
-
-                    <label>Pick images to show the damage (this only gets uploaded if the damage box is ticked):</label>
-                    <input type="file"
-                           name="filesDamage"
-                           id="files"
-                           multiple
-                           accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-                           class="form-control" />
-                    <span class="text-danger"></span> <!-- name of input has to be the same as the argument of the post method -->
-
-                </div>
-            </div>
-
             <div class="form-group">
                 <label asp-for="vehicleStateRetrieval.Observations" class="control-label"></label>
                 <input asp-for="vehicleStateRetrieval.Observations" class="form-control" />
