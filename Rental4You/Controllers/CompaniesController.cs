@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Rental4You.Data;
 using Rental4You.Models;
 using Rental4You.ViewModels;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Rental4You.Controllers
 {
@@ -115,10 +109,14 @@ namespace Rental4You.Controllers
                                                                 )
                                                               .ToListAsync();
 
+           
             var invoice7Days = 0;
             var invoice30Days = 0;
-            
-            foreach(var reserv in reservationsLast7Days)
+
+            var numberOfReservs = reservationsLast30Days.Count;
+            var diaryReservsEachDay = Math.Round((decimal)numberOfReservs/30, 2);
+
+            foreach (var reserv in reservationsLast7Days)
             {
                 invoice7Days = invoice7Days + Convert.ToInt32(reserv.Price);
             }
@@ -129,6 +127,7 @@ namespace Rental4You.Controllers
 
             ViewData["Invoice7Days"] = invoice7Days;
             ViewData["Invoice30Days"] = invoice30Days;
+            ViewData["AverageReserv"] = diaryReservsEachDay;
 
             return View();
         }
