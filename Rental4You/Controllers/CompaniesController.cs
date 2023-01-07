@@ -107,12 +107,11 @@ namespace Rental4You.Controllers
             DataTable dt = new DataTable();
             dt.Columns.Add("Days", System.Type.GetType("System.Int32"));
             dt.Columns.Add("Quantity", System.Type.GetType("System.Int32"));
-            Random rand = new Random();
-            for(int i=0; i<30; i++)
+            foreach(DateTime day in EachDay(last30Days, DateTime.Now))
             {
                 DataRow dr = dt.NewRow();
-                dr["Days"] = i+1;
-                var reservations = reservationsLast30Days.Where(r => r.DateTimeOfRequest.Day == i+1).ToList();
+                dr["Days"] = day.Day;
+                var reservations = reservationsLast30Days.Where(r => r.DateTimeOfRequest.Day == day.Day).ToList();
                 var quantity = 0;
                 if(reservations != null)
                 {
@@ -551,6 +550,12 @@ namespace Rental4You.Controllers
                     $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                     $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
+        }
+
+        public IEnumerable<DateTime> EachDay(DateTime from, DateTime thru)
+        {
+            for (var day = from.Date; day.Date <= thru.Date; day = day.AddDays(1))
+                yield return day;
         }
     }
 }
