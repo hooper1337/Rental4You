@@ -15,5 +15,6 @@ namespace Rental4You.Models
         public int nif { set; get; }
         [Display(Name = "Available")]
         public Boolean available { get; set; }
+        public DateTime? registerDate { get; set; }
     }
 }

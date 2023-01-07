@@ -228,6 +228,9 @@ namespace Rental4You.Migrations
                     b.Property<int>("nif")
                         .HasColumnType("int");
 
+                    b.Property<DateTime?>("registerDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -299,9 +302,6 @@ namespace Rental4You.Migrations
                     b.Property<string>("applicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("available")
-                        .HasColumnType("bit");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CompanyId");
@@ -324,9 +324,6 @@ namespace Rental4You.Migrations
 
                     b.Property<string>("applicationUserId")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<bool>("available")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
