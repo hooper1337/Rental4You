@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Rental4You.Data;
@@ -86,6 +88,48 @@ namespace Rental4You.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
+            return View();
+        }
+
+        [Authorize(Roles = "Manager")]
+        public async Task<IActionResult> ManagerDashboard()
+        {
+            var applicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var manager = _context.managers.Where(x => x.applicationUser.Id == applicationUserId).First();
+
+            DateTime currentDate = DateTime.Now;
+            DateTime last7Days = currentDate.AddDays(-7);
+            DateTime last30Days = currentDate.AddDays(-30);
+
+            var reservationsLast7Days = await _context.reservations.Include("vehicle")
+                                                              .Where(r => r.DateTimeOfRequest > last7Days 
+                                                                     && r.DateTimeOfRequest < currentDate
+                                                                     && r.vehicle.CompanyId == manager.CompanyId
+                                                                     )
+                                                              .ToListAsync();
+
+            var reservationsLast30Days = await _context.reservations.Include("vehicle")
+                                                              .Where(r => r.DateTimeOfRequest > last30Days
+                                                                && r.DateTimeOfRequest < currentDate
+                                                                && r.vehicle.CompanyId == manager.CompanyId
+                                                                )
+                                                              .ToListAsync();
+
+            var invoice7Days = 0;
+            var invoice30Days = 0;
+            
+            foreach(var reserv in reservationsLast7Days)
+            {
+                invoice7Days = invoice7Days + Convert.ToInt32(reserv.Price);
+            }
+            foreach (var reserv in reservationsLast30Days)
+            {
+                invoice30Days = invoice30Days + Convert.ToInt32(reserv.Price);
+            }
+
+            ViewData["Invoice7Days"] = invoice7Days;
+            ViewData["Invoice30Days"] = invoice30Days;
+
             return View();
         }
 

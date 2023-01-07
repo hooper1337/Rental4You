@@ -78,7 +78,7 @@ namespace Rental4You.Controllers
                 x.EndDate = request.EndDate;
                 x.BeginDate = request.BeginDate;
                 x.vehicleId = request.vehicleId;
-
+                x.DateTimeOfRequest = DateTime.Now;
                 x.Price = Math.Round(vehicle.costPerDay * (decimal)NrDays);
                 x.vehicle = vehicle;
                 x.confirmed = false;

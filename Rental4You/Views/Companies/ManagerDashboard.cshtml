@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h1>Manager Dashboard</h1>
+
+<h3>Invoices</h3>
+<hr/>
+
+<div class="row">
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Invoice from last 7 days</h5>
+                <p class="card-text">In the last 7 days our  company has received @ViewBag.Invoice7Days$ of invoices.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Invoice form last 30 days</h5>
+                <p class="card-text">In the last 30 days our  company has received @ViewBag.Invoice30Days$ of invoices.</p>
+            </div>
+        </div>
+    </div>
+</div>
