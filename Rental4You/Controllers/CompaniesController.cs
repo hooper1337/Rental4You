@@ -1,4 +1,5 @@
 ﻿
+using System.Data;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -83,6 +84,51 @@ namespace Rental4You.Controllers
         public IActionResult Create()
         {
             return View();
+        }
+
+        public IActionResult GetDataCompany()
+        {
+            //dados de exemplo
+            List<object> data = new List<object>();
+
+            var applicationUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var manager = _context.managers.Where(x => x.applicationUser.Id == applicationUserId).First();
+
+            DateTime currentDate = DateTime.Now;
+            DateTime last30Days = currentDate.AddDays(-30);
+
+            var reservationsLast30Days = _context.reservations.Include("vehicle")
+                                                              .Where(r => r.DateTimeOfRequest > last30Days
+                                                                && r.DateTimeOfRequest < currentDate
+                                                                && r.vehicle.CompanyId == manager.CompanyId
+                                                                )
+                                                              .ToList();
+
+            DataTable dt = new DataTable();
+            dt.Columns.Add("Days", System.Type.GetType("System.Int32"));
+            dt.Columns.Add("Quantity", System.Type.GetType("System.Int32"));
+            Random rand = new Random();
+            for(int i=0; i<30; i++)
+            {
+                DataRow dr = dt.NewRow();
+                dr["Days"] = i+1;
+                var reservations = reservationsLast30Days.Where(r => r.DateTimeOfRequest.Day == i+1).ToList();
+                var quantity = 0;
+                if(reservations != null)
+                {
+                    quantity = reservations.Count;
+                }
+                dr["Quantity"] = quantity;
+                dt.Rows.Add(dr);
+            }
+
+            foreach (DataColumn dc in dt.Columns)
+            {
+                List<object> x = new List<object>();
+                x = (from DataRow drr in dt.Rows select drr[dc.ColumnName]).ToList();
+                data.Add(x);
+            }
+            return Json(data);
         }
 
         [Authorize(Roles = "Manager")]

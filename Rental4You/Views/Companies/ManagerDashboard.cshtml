@@ -8,7 +8,7 @@
 <hr/>
 
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-4">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Invoice from last 7 days</h5>
@@ -16,7 +16,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-4">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Invoice form last 30 days</h5>
@@ -24,7 +24,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-4">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title">Average diary reservations last 30 days</h5>
@@ -33,3 +33,46 @@
         </div>
     </div>
 </div>
+
+<br />
+<h3>Graph reservations per day(last 30)</h3>
+<hr />
+
+<div>
+    <canvas id="chartReservations"></canvas>
+</div>
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+         $.ajax({
+         type: "POST",
+         url: "/Companies/GetDataCompany",
+         contentType: "application/json; charset=utf-8",
+         dataType: "json",
+         success: function (data) {
+         let Labels = data[0];
+         let Datasets1 = data[1];
+         let dataT = {
+         labels: Labels,
+        datasets: [{
+         label: "Reservations",
+        data: Datasets1,
+        fill: false,
+        borderWidth: 1,
+         backgroundColor: ["red", "yellow", "purple", "orange", "cyan", "brown", "black", "blue", "grey", "green"]
+         }]
+         };
+         let ctx = $("#chartReservations").get(0).getContext("2d");
+         let myNewChart = new Chart(ctx, {
+         type: 'bar',
+         data: dataT,
+        options: {
+         responsive: true,
+        title: { display: true, text: 'Reservations/Day last 30 days' },
+         legend: { position: 'bottom' },
+         }
+         });
+         }
+         });
+    </script>
+ }
