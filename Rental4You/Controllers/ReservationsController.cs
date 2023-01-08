@@ -43,8 +43,11 @@ namespace Rental4You.Controllers
 
             double NrDays = 0;
 
+            if (request.BeginDate < DateTime.Now)
+                ModelState.AddModelError("BeginDate", "The start date must be after the current time");
             if (request.BeginDate > request.EndDate)
                 ModelState.AddModelError("BeginDate", "The start date cannot be greater than the end date");
+            
 
             var vehicle = _context.vehicles.Include("company").Include("reservations").FirstOrDefault(v => v.Id == request.vehicleId);
             if (vehicle == null)
@@ -209,29 +212,6 @@ namespace Rental4You.Controllers
         }
 
 
-        /*
-            ViewData["ErrorMessage"] = error;
-
-            var uniqueVehiclesPlace = from p in _context.vehicles
-                                      group p by new { p.place } //or group by new {p.Id, p.Whatever}
-                                      into mygroup
-                                      select mygroup.FirstOrDefault();
-            ViewData["VehicleCategories"] = new SelectList(uniqueVehiclesPlace.ToList(), "Id", "place");
-
-            ViewData["Client"] = new SelectList(_context.categories.ToList(), "Id", "name");
-            // ViewData["withdrawDateList"] = new SelectList(_context.vehicles.ToList(), "Id", "withdrawDate"); // need to change to withdrawDate
-         */
-
-        // POST
-        /*
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ListCompanyReservations()
-        {
-            return View();
-
-        }*/
-
         // GET: Agendamentos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -394,6 +374,7 @@ namespace Rental4You.Controllers
             {
                 return NotFound();
             }
+            
 
             // directory for the damage (to my brain)
             string damagePath = Path.Combine(

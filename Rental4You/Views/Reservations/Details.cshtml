@@ -41,7 +41,8 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.vehicle.Id)
         </dd>
-
+    </dl>
+        <hr />
         <h5>Vehicle State on Delivery</h5>
         <hr />
         <dl class="row">
@@ -71,7 +72,8 @@
             <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.vehicleStateDelivery.ApplicationUser.firstName)
             </dd>
-
+        </dl>
+    <hr />
         <h5>Vehicle State on Retrieval</h5>
         <hr />
         <dl class="row">
@@ -99,7 +101,8 @@
             <dd class="col-sm-10">
                     @Html.DisplayFor(model => model.vehicleStateRetrieval.ApplicationUser.firstName)
             </dd>
-
+        </dl>
+        <hr />
         @if (User.IsInRole("Employer") || User.IsInRole("Manager"))
         {
             @if (Model.confirmed == false)
@@ -118,10 +121,14 @@
 <div>
     @if (User.IsInRole("Employer") || User.IsInRole("Manager") )
     {
-        <div>For employers:</div>
-        <a asp-action="VehicleState" asp-route-id="@Model?.Id">Edit Vehicle States in delivery and retrieval</a>
-        <br>
-        <br>
+        @if(Model.confirmed == true)
+        {
+            <div>For employers and managers:</div>
+                <a asp-action="VehicleState" asp-route-id="@Model?.Id">Edit Vehicle States in delivery and retrieval</a>
+            <br>
+            <br>
+        }
+        
     }
    
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

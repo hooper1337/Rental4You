@@ -75,10 +75,28 @@
                 <div class="collapse navbar-collapse justify-content-between px-3" id="navbarCollapse">
                     <div class="navbar-nav ml-auto py-0">
                         <a class="nav-item nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        @if(this.User.IsInRole("Manager"))
+                        {
+                            <div class="nav-item dropdown">
+                                <a class="nav-item nav-link" asp-area="" asp-controller="Companies" asp-action="ManagerDashBoard">Dashboard</a>
+                            </div>
+                        }
+                        @if(this.User.IsInRole("Manager"))
+                        {
+                            <div class="nav-item dropdown">
+                                <a class="nav-item nav-link" asp-area="" asp-controller="Companies" asp-action="ListCompanyEmployees">Employees</a>
+                            </div>
+                        }
+                        @if(this.User.IsInRole("Admin"))
+                        {
+                            <div class="nav-item dropdown">
+                                <a class="nav-item nav-link" asp-area="" asp-controller="Users" asp-action="AdminDashboard">Dashboard</a>
+                            </div>
+                        }
                         <div class="nav-item dropdown">
                             @if (this.User.IsInRole("Admin"))
                             {
-                                <a class="nav-item nav-link" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                
                             }
                         </div>
                         <div class="nav-item dropdown">

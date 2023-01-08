@@ -48,13 +48,15 @@ namespace Rental4You.Controllers
 
             if (textToSearch != null && available == null)
             {
-                searchCompany.companyList = await _context.companies.Include("vehicles").Where(c => c.name == textToSearch).ToListAsync();
+                searchCompany.companyList = await _context.companies.Include("vehicles").Where(c => c.name.Contains(textToSearch)).ToListAsync();
             }
 
             if (available != null && textToSearch == null)
             {
                 searchCompany.companyList = await _context.companies.Include("vehicles").Where(c => c.available == available).ToListAsync();
             }
+
+            searchCompany.companyList = searchCompany.companyList.OrderBy(c => c.name).ToList();
             searchCompany.numberOfResults = await _context.companies.CountAsync();
             return View(searchCompany);
         }
@@ -371,6 +373,30 @@ namespace Rental4You.Controllers
             var managers = await _context.managers.Where(e => e.CompanyId == company.Id).ToListAsync();
             var employers = await _context.employees.Where(e => e.CompanyId == company.Id).ToListAsync();
             var vehicles = await _context.vehicles.Where(e => e.CompanyId == company.Id).ToListAsync();
+            var reservations = await _context.reservations.Include("vehicle").ToListAsync();
+            var check = false;
+
+            if (reservations == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            foreach (var vehicle in vehicles)
+            {
+                foreach (var reser in reservations)
+                {
+                    if (reser.vehicle.Id == vehicle.Id)
+                    {
+                        check = true;
+                    }
+                }
+            }
+
+            if (check == true)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -480,6 +506,29 @@ namespace Rental4You.Controllers
             var managers = await _context.managers.Include("applicationUser").Where(e => e.CompanyId == company.Id).ToListAsync();
             var employers = await _context.employees.Include("applicationUser").Where(e => e.CompanyId == company.Id).ToListAsync();
             var vehicles = await _context.vehicles.Where(e => e.CompanyId == company.Id).ToListAsync();
+            var reservations = await _context.reservations.Include("vehicle").ToListAsync();
+            var check = false;
+
+            if(reservations == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            foreach(var vehicle in vehicles)
+            {
+                foreach(var reser in reservations)
+                {
+                    if(reser.vehicle.Id == vehicle.Id)
+                    {
+                        check = true;
+                    }
+                }
+            }
+
+            if(check == true)
+            {
+                return RedirectToAction(nameof(Index));
+            }
 
             if (company != null && vehicles.Count == 0)
             {
@@ -497,6 +546,14 @@ namespace Rental4You.Controllers
                     {
                         _context.employees.Remove(employee);
                         await DeleteUser(employee.applicationUser.Id);
+                    }
+                }
+                if(vehicles != null)
+                {
+
+                    foreach(var vehicle in vehicles)
+                    {
+                        _context.vehicles.Remove(vehicle);
                     }
                 }
                 _context.companies.Remove(company);
