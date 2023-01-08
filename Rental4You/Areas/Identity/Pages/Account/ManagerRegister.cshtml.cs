@@ -95,7 +95,10 @@ namespace Rental4You.Areas.Identity.Pages.Account
             ViewData["CompaniesList"] = new SelectList(_context.companies.ToList(), "Id", "name");
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
+            if (Input.bornDate > DateTime.Now)
+            {
+                ModelState.AddModelError("bornDate", "Born date have to be previous the current time");
+            }
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
